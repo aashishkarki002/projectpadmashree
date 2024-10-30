@@ -1,0 +1,176 @@
+body{
+    background-color: rgba(202, 202, 202, 1);
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.main{
+background-color: rgba(238, 238, 238, 1);
+height: 570px;
+width: 1240px;
+margin-left: 60px;
+margin-top: 30px;
+
+}
+.logo{
+    width: 400px;
+    padding-top: 30px;
+  margin-left: -70px;
+}
+.second-main{
+    background-color: white;
+    height: 520px;
+    width: 440px;
+    margin-left: 780px;
+ margin-top: -240px;
+ box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
+ 
+
+}
+.title{
+  font-weight: bold;
+  font-size: 35px;
+  
+}
+.firstname,.lastname{
+  background-color: rgba(240, 240, 240, 1);
+  border: none;
+  border-radius: 4px;
+  padding: 8px ;
+ }
+
+ .names{
+  display: flex;
+  gap: 15px;
+ }
+ .email,.pword,.cpword{
+  background-color: rgba(240, 240, 240, 1);
+  background-color: rgba(240, 240, 240, 1);
+  border: none;
+  border-radius: 4px;
+  padding: 8px ;
+  display: flex;
+  margin-top: 15px;
+
+ }
+ body{
+  background-color: rgba(202, 202, 202, 1);
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.main{
+background-color: rgba(238, 238, 238, 1);
+height: 570px;
+width: 1240px;
+margin-left: 60px;
+margin-top: 30px;
+
+}
+.logo{
+  width: 400px;
+  padding-top: 30px;
+margin-left: -70px;
+}
+.second-main{
+  background-color: white;
+  height: 520px;
+  width: 440px;
+  margin-left: 780px;
+margin-top: -240px;
+box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
+
+}
+.title{
+display: flex;
+flex-direction: column;
+margin-left: 30px;
+}
+.titles{
+font-weight: bold;
+font-size: 34px;
+margin-top: 12px;
+margin-bottom: 10px;
+
+}
+.sub-title{
+font-size: 16px;
+margin-top: 8px;
+margin-left: 14px;
+}
+.firstname,.lastname{
+background-color: rgba(240, 240, 240, 1);
+border: none;
+border-radius: 4px;
+padding: 10px 8px;
+margin-top: 30px;
+height:35px ;
+width: 168px;
+
+}
+a{
+color: rgba(1, 137, 71, 1);
+}
+
+.names{
+display: flex;
+gap: 15px;
+
+}
+.email,.pword,.cpword{
+background-color: rgba(240, 240, 240, 1);
+background-color: rgba(240, 240, 240, 1);
+border: none;
+border-radius: 4px;
+padding: 8px ;
+display: flex;
+margin-top: 15px;
+
+
+margin-left: 30px;
+margin-top: 30px;
+color: rgba(157, 157, 157, 1);
+width: 350px;
+
+}
+input {
+border: 2px solid #ccc; 
+padding: 10px;
+outline: none; 
+transition: border-color 0.3s ease; 
+}
+
+input:focus {
+border: 1px solid;
+border-color:rgba(1, 137, 71, 1);  
+
+}
+.firstname{
+margin-left: 30px;
+}
+
+
+.button{
+margin-top: 12px;
+height: 35px;
+width: 350px;
+margin-left: 30px;
+background-color: rgba(1, 137, 71, 1);
+color: white;
+font-weight: bold;
+border: none;
+border-radius: 5px;
+padding: 8px;
+margin-top: 30px;
+
+}
+.agree{
+margin-top: 30px;
+display: flex;
+align-items: center;
+margin-left: 30px;
+
+}
+input[type=checkbox]{
+border-color: grey;
+border: 2px solid;
+height: 20px;
+width: 20px;
+margin-right: 10px;
+}
