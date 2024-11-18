@@ -1,3 +1,9 @@
+<?php
+include("connect.php")
+
+
+?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,15 +24,15 @@
             <div class="titles">Create an account</div>
 <div class="sub-title ">Already have an account? <a href="login.html">login</a></div>
         </div>
-
+<form action="connect.php" method="post" >
 <div class="names">
-<div><input type="text" placeholder="first name" class="firstname"></div>
-<div><input type="text" placeholder="last name" class="lastname"></div>
+<div><input type="text" placeholder="first name" class="firstname" name="f_name" ></div>
+<div><input type="text" placeholder="last name" class="lastname" name="l_name" ></div>
 </div>
 
-<div><input type="email" placeholder="abc@example.com" class="email"></div>
-<div><input type="password" placeholder="password" class="pword"></div>
-<div><input type="password" placeholder="confirm password" class="cpword"></div>
+<div><input type="email" placeholder="abc@example.com" class="email" name="email" ></div>
+<div><input type="password" placeholder="password" class="pword" name="password" ></div>
+<div><input type="password" placeholder="confirm password" class="cpword" name="c_password" ></div>
 <div class="agree">
 <div><input type="checkbox" name="" class="checkbox"></div>
 <div class="term">I agree to the <a href="">terms and condition</a> </div>
@@ -35,6 +41,7 @@
 <div><button class="button ">Create account</button></div>
 </div>
     </div>
+    </form>
 </div>
 </body>
 </html>
