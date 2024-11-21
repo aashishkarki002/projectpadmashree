@@ -1,5 +1,5 @@
 <?php
-include("connection/connect.php")
+include("../backend/connect.php");
 ?>
 
 <html lang="en">
@@ -22,15 +22,15 @@ include("connection/connect.php")
             <div class="titles">Create an account</div>
 <div class="sub-title ">Already have an account? <a href="login.html">login</a></div>
         </div>
-<form action="insert.php" method="post" >
+<form action="/projectpadmashree/backend/insert.php" method="post" >
 <div class="names">
-<div><input type="text" placeholder="first name" class="firstname" name="f_name" ></div>
-<div><input type="text" placeholder="last name" class="lastname" name="l_name" ></div>
+<div><input type="text" placeholder="first name" class="firstname" name="f_name" required></div>
+<div><input type="text" placeholder="last name" class="lastname" name="l_name"  required></div>
 </div>
 
-<div><input type="email" placeholder="abc@example.com" class="email" name="email" ></div>
-<div><input type="password" placeholder="password" class="pword" name="password" ></div>
-<div><input type="password" placeholder="confirm password" class="cpword" name="c_password" ></div>
+<div><input type="email" placeholder="abc@example.com" class="email" name="email" required ></div>
+<div><input type="password" placeholder="password" class="pword" name="password" required></div>
+<div><input type="password" placeholder="confirm password" class="cpword" name="c_password" required></div>
 <div class="agree">
 <div><input type="checkbox" name="" class="checkbox"></div>
 <div class="term">I agree to the <a href="">terms and condition</a> </div>
