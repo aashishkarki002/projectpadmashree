@@ -11,7 +11,6 @@ include("../backend/connect.php");
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="authentication.js"></script>
 </head>
 <body>
     <div class="main">
@@ -28,19 +27,23 @@ include("../backend/connect.php");
 <div><input type="text" placeholder="first name" class="firstname" name="f_name" required></div>
 <div><input type="text" placeholder="last name" class="lastname" name="l_name"  required></div>
 </div>
-
 <div><input type="email" placeholder="abc@example.com" class="email" name="email" required ></div>
-<div><input type="password" placeholder="password" class="pword" name="password" required></div>
-<div><input type="password" placeholder="confirm password" class="cpword" name="c_password" required></div>
-<div class="agree">
-<div><input type="checkbox" name="" class="checkbox"></div>
-<div class="term">I agree to the <a href="">terms and condition</a> </div>
+<div id="password_holder" >
+<div><input type="password" placeholder="password" class="pword" id="pword" name="password" required></div>
+<div><input type="password" placeholder="confirm password" class="cpword" id="cpword" name="c_password" required></div>
 </div>
-<div class="create_account">
-<div><button class="button " type="submit" name="submit" >Create account</button></div>
+<div id="message" class="error_msg"></div>
+<div class="agree">
+<div><input type="checkbox" name="checkbox" class="checkbox"></div>
+<div class="term">I agree to the <a href="">terms and condition</a></div>
+</div>
+<div class="create_account" >
+<div><button class="button " type="submit" name="submit" id="button" >Create account</button></div>
 </div>
     </div>
     </form>
-</div>
+</div><script src="authentication.js">
+  
+</script>
 </body>
 </html>
