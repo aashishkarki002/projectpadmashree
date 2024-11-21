@@ -1,15 +1,15 @@
 <?php 
-// if (isset($_POST['submit'])) {
-//     $f_name="aashish";
-//     $l_name="karki";
-//     $email="aashishkarki002@gmail.com";
-//     $password="123456";
-//     $c_password="123456";
-// } authentication required
+if (isset($_POST['submit'])) {
+    $f_name=$_POST["f_name"];
+    $l_name=$_POST["l_name"];
+    $email=$_POST["email"];
+    $password=$_POST["password"];
+    $c_password=$_POST["c_password"];
+} 
 
 
-include("connect.php");
-$sql="INSERT INTO registration(firstname,lastname,email,password,c_password) VALUES('$f_name','$l_name','$email','$password','$c_password')";
+include("connection/connect.php");
+$sql="INSERT INTO register(f_name,l_name,email,pword,c_pword) VALUES('$f_name','$l_name','$email','$password','$c_password')";
 
 try {
     mysqli_query($conn,$sql);

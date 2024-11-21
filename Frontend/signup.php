@@ -1,7 +1,5 @@
 <?php
-include("connect.php")
-
-
+include("connection/connect.php")
 ?>
 
 <html lang="en">
