@@ -20,15 +20,15 @@
         </div>
 
 <div class="details">
-<div><input type="text" placeholder="abc@gmail.com" class="email"></div>
-<div><input type="text" placeholder="Password" class="password"></div>
+<div><input type="text" placeholder="abc@gmail.com" class="email" name="email"></div>
+<div><input type="text" placeholder="Password" class="password" name="pword"></div>
 </div>
 <div class="forgot-pass">
     Forgot password?
 </div>
 <div class="term">Dont have an account? <a href="signup.php">Signup</a> </div>
 <div class="create_account">
-<div class="button-holder" ><button class="button ">LOGIN</button></div>
+<div class="button-holder" ><button class="button" name="login" >LOGIN</button></div>
 </div>
     </div>
 </div>

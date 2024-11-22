@@ -1,25 +1,32 @@
 let password_holder=document.getElementById("password_holder")
 let button = document.getElementById("button")
 let message = document.getElementById("message")
-message.classList.remove("error_msg","sucess_msg")
-button.addEventListener("click", authenticate);
-function authenticate(){
-    let pword = document.getElementById("pword").value
-let c_pword=document.getElementById("c_pword").value
 
-if(pword!=c_pword){
-message.innerText="Passwords do not match"
-message.classList.add("error_msg")
+message.innerText='';
+message.classList.remove("error_msg","success_msg")
+
+
+
+document.getElementById("cpword").addEventListener('input', validatePasswords);
+
+function validatePasswords(){
+   const pword = document.getElementById("pword")
+const c_pword=document.getElementById("cpword")
+
+message.innerText = '';
+message.classList.remove("error_msg", "success_msg");
+
+if (pword.value !== c_pword.value){
+message.innerText="Passwords do not match";
+message.classList.add("error_msg");
 return false
 }
-if(pword.value.lenght<8){
-    message.innerText = "Password must be at least 8 characters long!";
-    message.classList.add("error_msg");
-    return false;
-
-
-}
-message.innerText="Password matched successfully"
+else{
+message.innerText="password matched sucessfully";
 message.classList.add("success_msg")
+return true
 }
-document.getElementById("cpword").addEventListener('input', validatePasswords);
+
+}
+
+    

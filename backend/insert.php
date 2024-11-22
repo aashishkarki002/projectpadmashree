@@ -5,7 +5,7 @@ if (isset($_POST['submit'])) {
     $email=$_POST["email"];
     $password=$_POST["password"];
  
-} 
+
 
 
 include("connect.php");
@@ -13,11 +13,14 @@ $sql="INSERT INTO register(f_name,l_name,email,pword) VALUES('$f_name','$l_name'
 
 try {
     mysqli_query($conn,$sql);
-    echo"user registerd";
+    header("Location: ../frontend/login.php");
+    exit();
+
 
 } catch (mysqli_sql_exception) {
     echo"unable to register";
 }
 
 mysqli_close($conn);
+}
 ?>

@@ -10,13 +10,4 @@ try {
 } catch (mysqli_sql_exception) {
     echo"database couldnt be connected";
 }
-
-
-
-
-
-
-
-
-
 ?>

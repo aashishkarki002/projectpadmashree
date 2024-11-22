@@ -145,7 +145,9 @@ border-color:rgba(1, 137, 71, 1);
 margin-left: 30px;
 }
 
-
+.button button:hover{
+  background-color: rgb(1, 99, 51);
+}
 
 .button{
 margin-top: 12px;
@@ -159,8 +161,8 @@ border: none;
 border-radius: 5px;
 padding: 8px;
 margin-top: 30px;
-
 }
+
 .agree{
 margin-top: 30px;
 display: flex;
@@ -178,10 +180,12 @@ margin-right: 10px;
 .error_msg{
   color: red;
   font-size: 0.9em;
-  margin-top: 10px;
+  margin-top: 8px;
+  padding-left: 30px;
 }
-.sucess_msg{
+.success_msg{
   color: green;
   font-size: 0.9em;
-  margin-top: 10px;
+  margin-top: 8px;
+  padding-left: 30px;
 }
