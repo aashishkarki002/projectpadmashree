@@ -44,14 +44,15 @@ body{
             margin-left: 36px;
             margin-top: 8px;
           }
-          input[type=text] {
+          input[type=password], input[type=text] {
             width: 90%;
             padding: 10px 8px;
             margin: 8px 0;
             box-sizing: border-box;
             border: none;
             border-bottom: 2px solid rgb(0, 0, 0);
-          }
+        }
+        
           .forgot-pass,.term,.button-holder{
             margin-left: 36px; 
             margin-top: 10px;
@@ -77,6 +78,11 @@ body{
          margin-left: 120px;
           }
           input[type=text]:focus {
+            border: 1px solid;
+            border-color:rgba(1, 137, 71, 1);  
+        
+          }
+          input[type=password]:focus {
             border: 1px solid;
             border-color:rgba(1, 137, 71, 1);  
         

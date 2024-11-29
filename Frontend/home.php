@@ -1,3 +1,9 @@
+<?php
+session_start();
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,30 +24,32 @@
         </div>
      
         <div class="side-bar">
-            <div class="individual">
+            <div class="individual" id="home">
             <div><img src="icons/home.png" alt="" class="icons"></div>
             <div>Home</div>
         </div>
-            <div class="individual">
+            <div class="individual" id="stats">
             <div><img src="icons/bar-chart-square-01.png" alt="" class="icons"></div>
             <div>Statistics</div>
         </div>
-            <div class="individual">
+            <div class="individual" id="summary">
             <div><img src="icons/coins-rotate.png" alt="" class="icons"></div>
             <div>Summary</div>
         </div>
-            <div class="individual">
+            <div class="individual" id="history">
             <div><img src="icons/history.png" alt="" class="icons"></div>
             <div>History</div>
         </div>
-            <div class="individual" id="setting">
+            <div class="individual" id="setting" id="setting">
             <div><img src="icons/Vector.png" alt="" class="icons"></div>
             <div>Settings</div>
         </div>
         </div>  
         <div class="mid-bar">
             <div class="dash">DASHBOARD</div>
-            <div class="welcome">WELCOME UTSHAHA</div>
+            <div class="welcome">WELCOME 
+            <?php echo strtoupper( htmlspecialchars($_SESSION['firstname'])); ?>
+            </div>
             <div class="transaction">
                 <div class="income" >
                     <div class="title">Total income</div>
@@ -98,9 +106,14 @@
 <div>
 
 
-            </div>
-                    </div>
+</div>
+  </div>
                
     </div>
+    <script>
+const individual = document.getElementsByClassName("individual");
+
+
+    </script>
 </body>
 </html>

@@ -18,19 +18,30 @@
             <div class="titles">Welcome</div>
 <div class="sub-title ">Enter your Email to continue </div>
         </div>
-
+<form action="/projectpadmashree/backend/login_insert.php" method="post">
 <div class="details">
-<div><input type="text" placeholder="abc@gmail.com" class="email" name="email"></div>
-<div><input type="text" placeholder="Password" class="password" name="pword"></div>
+<div><input type="text" placeholder="abc@gmail.com" class="email" name="email" required></div>
+<div><input type="password" placeholder="Password" class="password" name="pword" required></div>
 </div>
 <div class="forgot-pass">
     Forgot password?
 </div>
+
 <div class="term">Dont have an account? <a href="signup.php">Signup</a> </div>
 <div class="create_account">
-<div class="button-holder" ><button class="button" name="login" >LOGIN</button></div>
+<div class="button-holder" ><button class="button" name="login" type="submit" >LOGIN</button></div>
 </div>
+
     </div>
+    </form>
 </div>
+<script>
+
+
+
+
+
+    
+</script>
 </body>
 </html>
