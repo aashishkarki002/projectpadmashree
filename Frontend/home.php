@@ -151,6 +151,16 @@ $(document).ready(function () {
         }
     });
 });
+$.ajax({
+        url: '../backend/fetch_balance.php',
+        method: 'GET',
+        success: function (response) {
+            $('.balance-amt').html("&#8360;" + response.trim());
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching balance:", error);
+        }
+    });
 
 </script>
 
