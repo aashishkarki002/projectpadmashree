@@ -11,6 +11,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/home.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap" rel="stylesheet">
@@ -69,51 +70,89 @@ session_start();
                     <div class="title"> Balance</div>
                     <div class="holder">
                     <div><img src="icons/icons8-balance-48 1.png" alt="" class="transaction-icons"></div>
-                    <div class="balance-amt">&#8360;150000</div>
+                    <div class="balance-amt">&#8360;</div>
                 </div>
                 </div>
             </div>
-            <div class="additions">
-<div class="table" >
-    <div class="table-title">
-<div class="sub-title">Income</div>
-<div id="expense-title">Expense</div>
-</div>
-<div class="tags">tags</div>
-<div class="amount-holder">
-    <div class="dropdown">
-        <input list="types" placeholder="choose a existing tags or add new" />
-        <datalist id="types">
-          <option value="personal expense">
-          <option value="rent">
-          <option value="food">
-          <option value="entertainment">
-        </datalist>
+            <div class="table">
+                <div class="addincome">
+                    <p class="addin">Add Income</p>
+                    <form action="../backend/income_insert.php" method="post">
+                    <div class="box">
+                       
+                        <label for="category">Category</label>
+                        <input list="income" placeholder="select category" name="category">
+                        <label for="amount">Amount</label>
+                        <input type="number" placeholder="Enter Amount" name="amount">
+                        <label for="date">Date</label>
+                        <input type="date" name="date">
+                        <label for="note">Note</label>
+                        <input type="text" placeholder="Optional note" name="note">
+                        <div class="b">
+                        <button type="submit" class="btn" name="income">Add Income</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="addincome">
+                <p class="expense">Add expense</p>
+                <form action="../backend/expense_insert.php" method="post">
+                <div class="box">
+                    <label for="categoty">Category</label>
+                    <input list="income" placeholder="select category" name="category">
+                    <label for="amount" >Amount</label>
+                    <input type="number" placeholder="Enter Amount" name="amount">
+                    <label for="date">Date</label>
+                    <input type="date" name="date">
+                    <label for="note">Note</label>
+                    <input type="text" placeholder="Optional note" name="note">
+                    <div class="b">
+                    <button type="submit" class="expense-btn" name="expense">Add Expense</button>
+                </div>
+            </div>
+            </form>
         </div>
-        <div class="amt">
-</div>
-<input type="number" placeholder="amount">
-</div>
-<div class="note">
-    <div><input type="textarea" name="" id=""></div>
-    <div><button class="add-btn" >add income</button></div>
-</div>
+
+    </div>
+
 
 </div>
-
 </div>
-
 <div>
-
-
 </div>
   </div>
                
     </div>
-    <script>
-const individual = document.getElementsByClassName("individual");
+ <script src="navigation.js"></script>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Fetch total income
+    $.ajax({
+        url: '../backend/fetch_income.php', 
+        method: 'GET',
+        success: function (response) {
+            $('.income-amt').html("&#8360;" + response.trim());
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching total income:", error);
+        }
+    });
 
+    // Fetch total expense
+    $.ajax({
+        url: '../backend/fetch_expense.php', 
+        method: 'GET',
+        success: function (response) {
+            $('.expense-amt').html("&#8360;" + response.trim());
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching total expense:", error);
+        }
+    });
+});
 
-    </script>
+</script>
+
 </body>
 </html>

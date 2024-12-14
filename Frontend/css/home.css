@@ -13,7 +13,7 @@
 }
 .side-bar{
     box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
-    height: 600px;
+    height: 700px;
     width: 200px;
     margin-top: 8px;
     font-weight: 500;
@@ -34,10 +34,11 @@ body{
     align-items: center;
     gap: 10px;
     margin-top: 30px;
+    
    
 }
 #setting{
-    margin-top: 300px;
+    margin-top: 390px;
 }
 .dash{
     font-weight: 600;
@@ -51,7 +52,7 @@ body{
 }
 .mid-bar{
     margin-left: 240px;
-  margin-top: -600px;
+  margin-top: -700px;
 }
 .income{
     border: 1px solid black;
@@ -95,25 +96,7 @@ height: 80px;
     margin-right: 10px;
     margin-top: 20px;
 }
-.additions{
-    box-shadow:3px 4px 4px rgba(31, 31, 31, 0.3); 
-    border: 1px solid black;
-    width: 400px;
-    height: 300px;
-    margin-left: 300px;
-    margin-top: 60px;
-}
-.table-title{
-    display: flex;
 
-}
-.table{
-    border: 1px solid black;
-    width: 320px;
-    margin-left: 40px;
-    margin-top: 20px;
-    height: 200px;
-}
 input{
     width: 200px;
     height: 20px;
@@ -169,4 +152,82 @@ input[type=number]{
 }
 #expense-title{
     color: rgba(187, 0, 0, 1);
+}
+.addincome{
+
+    margin-top: 50px;
+    border-radius: 5px;
+    height: 450px;
+    width: 350px;
+    box-shadow: 5px 5px 10px 2px rgba(3, 3, 3, 0.1);    
+}
+.addin{
+    font-weight: bold;
+    color:rgba(1, 137, 71, 1);
+    font-size: larger;
+    margin-left: 50px;
+   
+}
+input{
+    height: 30px;
+    width:230px ;
+    font-size: 15px;
+    border-radius: 6px;
+    margin-top: 7px;
+    margin-bottom: 20px;
+    padding: 2px 3px 2px 3px;
+    border: 1px solid grey;
+
+}
+.box{
+    display: flex;
+    flex-direction: column;
+    margin-left:50px ;
+
+}
+input[type=number]{
+    height: 30px;
+    width:230px;
+    font-size: 15px;
+   
+}
+.btn{
+    height: 40px;
+    width: 150px;
+    border-radius: 4px;
+    background-color:rgba(1, 137, 71, 1);
+    color: white;
+    font-weight: bold;
+    border: none;
+    margin-left: 20px;
+}
+label{
+    color: grey;
+}
+.table{
+    display: flex;
+    gap: 180px;
+    margin-left: 80px;
+}
+.expense{
+    font-weight: bold;
+    color: rgba(187, 0, 0, 1);
+    font-size: larger;
+    margin-left: 50px;
+}
+.expense-btn{
+    height: 40px;
+    width: 150px;
+    border-radius: 4px;
+    background-color: rgba(187, 0, 0, 1);
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+.individual:hover{
+    background-color: lightgray;
+}
+
+.individual{
+    cursor: pointer;
 }
