@@ -87,3 +87,10 @@ body{
             border-color:rgba(1, 137, 71, 1);  
         
           }
+          .status-message {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .error { color: red; }
+        .success { color: green; }

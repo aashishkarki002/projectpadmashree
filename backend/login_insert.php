@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("connect.php");
+$error = "";
 
 if(isset($_POST['login'])){
     $email=$_POST["email"];
@@ -17,10 +18,14 @@ $_SESSION['logged_in']=true;
 header("Location: ../frontend/home.php");
 exit();
     }
-
+    else {
+        $_SESSION['error'] = "Incorrect password.";
+        header("location: ../frontend/login.php");
+        exit();
+    }
 }else{
     $_SESSION['error'] = "No user found with that email.";
-    header("location:login.php");
+    header("location:../frontend/login.php");
     exit();
 
 }

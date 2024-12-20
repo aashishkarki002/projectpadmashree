@@ -1,3 +1,12 @@
+<?php
+session_start();
+$error = ""; 
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error']; 
+    unset($_SESSION['error']); 
+}
+?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="main">
@@ -20,8 +30,14 @@
         </div>
 <form action="/projectpadmashree/backend/login_insert.php" method="post">
 <div class="details">
-<div><input type="text" placeholder="abc@gmail.com" class="email" name="email" required></div>
+<div><input type="text" placeholder="abc@gmail.com" class="email" name="email" id="email" required></div>
+<div id="status"></div>
 <div><input type="password" placeholder="Password" class="password" name="pword" required></div>
+<?php if (!empty($error)): ?>
+                    <div class="error-message" style="color: red; margin-top: 10px;">
+                        <?= htmlspecialchars($error) ?>
+                    </div>
+                <?php endif; ?>
 </div>
 <div class="forgot-pass">
     Forgot password?
@@ -37,6 +53,47 @@
 </div>
 <script>
 
+$(document).ready(function() {
+        let timeoutId;
+        
+        $('#email').on('input', function() {
+            clearTimeout(timeoutId);
+            const email = $(this).val();
+            const statusDiv = $('#status');
+            
+           
+            if (!email) {
+                statusDiv.html('');
+                return;
+            }
+            
+           
+            timeoutId = setTimeout(function() {
+                $.ajax({
+                    url: '../backend/auth_log.php',
+                    type: 'POST',
+                    data: { email: email },
+                    success: function(response) {
+                        const result = JSON.parse(response);
+                        if (result.exists) {
+                            statusDiv.html('')
+                                   .removeClass('error')
+                                   .addClass('success');
+                        } else {
+                            statusDiv.html('Email is not registered!')
+                                   .removeClass('sucess')
+                                   .addClass('error');
+                        }
+                    },
+                    error: function() {
+                        statusDiv.html('Error checking email')
+                               .removeClass('success')
+                               .addClass('error');
+                    }
+                });
+            }, 500);
+        });
+    });
 
 
 
