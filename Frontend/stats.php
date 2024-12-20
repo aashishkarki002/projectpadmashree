@@ -45,8 +45,33 @@ session_start();
         </div> 
         <div class="mid-bar">
             <div class="dash">Statsitics</div>
-     
-                
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // Load Google Charts
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        // Function to draw the chart
+        function drawChart() {
+            // Fetch data from PHP file
+            fetch('data.php')
+                .then(response => response.json())
+                .then(jsonData => {
+                    var data = google.visualization.arrayToDataTable(jsonData);
+
+                    var options = {
+                        title: 'Income and Expense Summary',
+                        pieHole: 0.4, // For Donut Chart
+                        colors: ['#4CAF50', '#F44336'] // Green for income, red for expense
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                })
+                .catch(error => console.error('Error loading chart data:', error));
+        }
+    </script>
+                <div id="chart_div" style="width: 800px; height: 500px;"></div>
             </body>
             <script src="navigation.js" type="text/javascript">
                 

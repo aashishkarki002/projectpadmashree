@@ -195,3 +195,9 @@ margin-right: 10px;
   margin-top: 8px;
   padding-left: 30px;
 }
+#emailMsg{
+  color: red;
+  font-size: 0.9em;
+  margin-top: 8px;
+  padding-left: 30px;
+}

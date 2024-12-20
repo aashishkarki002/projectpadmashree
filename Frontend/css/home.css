@@ -231,3 +231,7 @@ label{
 .individual{
     cursor: pointer;
 }
+.validation {
+    color: orange;
+    font-style: italic;
+  }
