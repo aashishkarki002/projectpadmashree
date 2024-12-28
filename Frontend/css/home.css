@@ -235,3 +235,141 @@ label{
     color: orange;
     font-style: italic;
   }
+
+.top-bar{
+    display: flex;
+}
+
+
+.profile {
+    position: relative;
+    display: flex;
+    margin-left: 1030px;
+    margin-bottom: 0px;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.profile h1 {
+    color: black;
+    font-size: 24px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1;
+    margin-top: 10px;
+}
+
+.show {
+    display: block;
+}
+
+.profile-info {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.profile-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.profile-info-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.profile-info-header span {
+    font-weight: bold;
+}
+
+.dropdown-item {
+    padding: 12px 15px;
+    text-decoration: none;
+    display: block;
+    color: black;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.logout {
+    color: #ff0000;
+    border-top: 1px solid #ddd;
+}
+
+.history-container {
+    padding: 20px;
+    width: 100%;
+}
+
+.history-filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.filter-dropdown {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-family: 'Amiko', sans-serif;
+}
+
+.transactions-list {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.transaction-amount.income {
+    color: #2ecc71;
+}
+
+.transaction-amount.expense {
+    color: #e74c3c;
+}

@@ -1,4 +1,4 @@
-let password_holder = document.getElementById("password_holder");
+
 let button = document.getElementById("button");
 let message = document.getElementById("message");
 let msg = document.getElementById("msg");
@@ -8,9 +8,10 @@ msg.innerText = "";
 message.innerText = "";
 message.classList.remove("error_msg", "success_msg");
 
-document.getElementById("pword").addEventListener("input", validatePassword);
+document.getElementById("password").addEventListener("input", validatePassword);
+
 function validatePassword() {
-   if (pword.value.length < 8) {
+   if (password.value.length < 8) {
       msg.innerText = "Password must be at least 8 characters long";
       msg.classList.add("error_msg"); 
       button.disabled = true;
@@ -22,7 +23,7 @@ function validatePassword() {
     }
  
    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  if (!strongPassword.test(pword.value)) {
+  if (!strongPassword.test(password.value)) {
     msg.innerText =
       "Password must include uppercase, lowercase, number, and special character";
     msg.classList.add("error_msg");
@@ -31,17 +32,17 @@ function validatePassword() {
   }
 }
 
-document.getElementById("cpword").addEventListener("input", validatePasswords);
+document.getElementById("c_password").addEventListener("input", validatePasswords);
 
 function validatePasswords() {
-  const pword = document.getElementById("pword");
-  const c_pword = document.getElementById("cpword");
+  const password = document.getElementById("password");
+  const c_password = document.getElementById("c_password");
 
   message.innerText = "";
   message.classList.remove("error_msg", "success_msg");
 
  
-  if (pword.value !== c_pword.value) {
+  if (password.value !== c_password.value) {
     message.innerText = "Passwords do not match";
     message.classList.add("error_msg");
     return false;

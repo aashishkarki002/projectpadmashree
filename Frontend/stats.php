@@ -47,8 +47,8 @@ session_start();
             <div class="dash">Statsitics</div>
             <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        // Load Google Charts
-        google.charts.load('current', {'packages':['corechart']});
+ // Load Google Charts
+ google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
 
         // Function to draw the chart
@@ -69,7 +69,7 @@ session_start();
                     chart.draw(data, options);
                 })
                 .catch(error => console.error('Error loading chart data:', error));
-        }
+        }       
     </script>
                 <div id="chart_div" style="width: 800px; height: 500px;"></div>
             </body>

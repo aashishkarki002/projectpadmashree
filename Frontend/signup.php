@@ -32,10 +32,10 @@ include("../backend/connect.php");
                 <div><input type="email" placeholder="abc@example.com" class="email" name="email" id="email" required></div>
                 <div id="email_msg"></div>
                 <div id="password_holder">
-                    <div><input type="password" placeholder="password" class="pword" id="pword" name="password" required></div>
+                    <div><input type="password" placeholder="password" class="pword" id="password" name="password" required></div>
                     <div class="" id="msg"></div>
                     <div class="pwd_req" id="validate"></div>
-                    <div><input type="password" placeholder="confirm password" class="cpword" id="cpword" name="c_password" required></div>
+                    <div><input type="password" placeholder="confirm password" class="cpword" id="c_password" name="c_password" required></div>
                 </div>
                 <div id="message" class="error_msg"></div>
                 <div class="agree">

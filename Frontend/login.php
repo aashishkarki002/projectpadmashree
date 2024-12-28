@@ -32,7 +32,10 @@ if (isset($_SESSION['error'])) {
 <div class="details">
 <div><input type="text" placeholder="abc@gmail.com" class="email" name="email" id="email" required></div>
 <div id="status"></div>
-<div><input type="password" placeholder="Password" class="password" name="pword" required></div>
+<div><input type="password" placeholder="Password" class="password" name="pword" required>
+<span id="togglePassword" style="cursor: pointer;">👁️</span>
+</div>
+
 <?php if (!empty($error)): ?>
                     <div class="error-message" style="color: red; margin-top: 10px;">
                         <?= htmlspecialchars($error) ?>
@@ -44,13 +47,21 @@ if (isset($_SESSION['error'])) {
 </div>
 
 <div class="term">Dont have an account? <a href="signup.php">Signup</a> </div>
-<div class="create_account">
+</span><div class="create_account">
 <div class="button-holder" ><button class="button" name="login" type="submit" >LOGIN</button></div>
 </div>
 
     </div>
     </form>
 </div>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordField = document.getElementById('password');
+    this.textContent = passwordField.type === 'password' ? '🙈' : '👁️';
+    passwordField.type = passwordField.type === 'password' ? 'text' : 'password';
+});
+
+</script>
 <script>
 
 $(document).ready(function() {

@@ -15,6 +15,25 @@ session_start();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap" rel="stylesheet">
+    <datalist id="income-categories">
+    <?php
+    include("../backend/connect.php");
+    $query = "SELECT category_name FROM income_categories";
+    $result = mysqli_query($conn, $query);
+    while($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='" . htmlspecialchars($row['category_name']) . "'>";
+    }
+    ?>
+    </datalist>
+    <datalist id="expense-categories">
+    <?php
+    $query = "SELECT category_name FROM expense_categories";
+    $result = mysqli_query($conn, $query);
+    while($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='" . htmlspecialchars($row['category_name']) . "'>";
+    }
+    ?>
+</datalist>
 </head>
 <body>
     <div class="main">
@@ -22,6 +41,25 @@ session_start();
             <div class="logo">
                 <img src="img/img.png" alt="" class="img"> 
             </div>
+            <div class="profile">
+            <button class="profile-trigger" onclick="toggleDropdown()">
+                <div class="profile-logo">
+                    <img src="./img/profile.jpg" alt="profile">
+                </div>
+                <h1>Profile</h1>
+            </button>
+            <div class="dropdown-content" id="myDropdown">
+                <div class="profile-info">
+                    <div class="profile-info-header">
+                        <img src="./img/profile.jpg" alt="profile">
+                        <span> Afno Budget</span>
+                    </div>
+                </div>
+                <a href="setting.php" class="dropdown-item">Settings & privacy</a>
+                <a href="logout.php" class="dropdown-item">Log Out</a>
+            </div>
+        </div>
+    </div>
         </div>
      
         <div class="side-bar">
@@ -41,10 +79,7 @@ session_start();
             <div><img src="icons/history.png" alt="" class="icons"></div>
             <div>History</div>
         </div>
-            <div class="individual" id="setting" id="setting">
-            <div><img src="icons/Vector.png" alt="" class="icons"></div>
-            <div>Settings</div>
-        </div>
+        
         </div>  
         <div class="mid-bar">
             <div class="dash">DASHBOARD</div>
@@ -56,14 +91,14 @@ session_start();
                     <div class="title">Total income</div>
                     <div class="holder">
                     <div><img src="icons/icons8-income-50 1.png" alt="" class="transaction-icons"></div>
-                    <div class="income-amt">&#8360;150000</div>
+                    <div class="income-amt">&#8360;0</div>
                 </div>
                 </div>
                 <div class="income" >
                     <div class="title">Total Expense</div>
                     <div class="holder">
                     <div><img src="icons/icons8-expense-50 1.png" alt="" class="transaction-icons"></div>
-                    <div class="expense-amt">&#8360;150000</div>
+                    <div class="expense-amt">&#8360;0</div>
                 </div>
                 </div>
                 <div class="income" >
@@ -81,7 +116,7 @@ session_start();
                     <div class="box">
                        
                         <label for="category">Category</label>
-                        <input list="income" placeholder="select category" name="category">
+                        <input list="income-categories" placeholder="select category" name="category">
                         <label for="amount">Amount</label>
                         <input type="number" placeholder="Enter Amount" name="amount">
                         <label for="date">Date</label>
@@ -98,8 +133,8 @@ session_start();
                 <p class="expense">Add expense</p>
                 <form action="../backend/expense_insert.php" method="post">
                 <div class="box">
-                    <label for="categoty">Category</label>
-                    <input list="income" placeholder="select category" name="category">
+                    <label for="category">Category</label>
+                    <input list="expense-categories" placeholder="select category" name="category">
                     <label for="amount" >Amount</label>
                     <input type="number" placeholder="Enter Amount" name="amount">
                     <label for="date">Date</label>
@@ -127,42 +162,44 @@ session_start();
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
-    // Fetch total income
     $.ajax({
-        url: '../backend/fetch_income.php', 
+        url: '../backend/fetch.php',
         method: 'GET',
+        dataType: 'json',  
         success: function (response) {
-            $('.income-amt').html("&#8360;" + response.trim());
+            if (response.error) {
+                console.error("Error:", response.error);
+                return;
+            }
+            
+            
+            $('.income-amt').html("&#8360;" + response.total_income);
+            $('.expense-amt').html("&#8360;" + response.total_expense);
+            $('.balance-amt').html("&#8360;" + response.balance);
         },
         error: function (xhr, status, error) {
-            console.error("Error fetching total income:", error);
-        }
-    });
-
-    // Fetch total expense
-    $.ajax({
-        url: '../backend/fetch_expense.php', 
-        method: 'GET',
-        success: function (response) {
-            $('.expense-amt').html("&#8360;" + response.trim());
-        },
-        error: function (xhr, status, error) {
-            console.error("Error fetching total expense:", error);
+            console.error("Error fetching data:", error);
         }
     });
 });
-$.ajax({
-        url: '../backend/fetch_balance.php',
-        method: 'GET',
-        success: function (response) {
-            $('.balance-amt').html("&#8360;" + response.trim());
-        },
-        error: function (xhr, status, error) {
-            console.error("Error fetching balance:", error);
+function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
         }
-    });
 
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-trigger') && 
+                !event.target.matches('.profile-trigger *')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    
 </script>
-
 </body>
 </html>
