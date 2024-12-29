@@ -147,19 +147,3 @@ body {
         font-size: 1.5rem;
     }
 }
-.chart {
-    position: relative;
-    height: 300px;
-    width: 100%;
-    padding: 20px;
-}
-
-.error-message {
-    color: #ef4444;
-    text-align: center;
-    padding: 20px;
-}
-
-.chart canvas {
-    max-width: 100%;
-}

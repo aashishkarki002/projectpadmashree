@@ -55,58 +55,60 @@
         </div>
 
         <div class="mid-bar">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800">Transaction History</h3>
+        <div class="">
+            <div class="">
+                <h3 class="text-xl ">Transaction History</h3>
                 <div class="flex gap-4">
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-gray-600">Start Date:</label>
-                        <input type="date" id="startDate" class="border rounded px-2 py-1">
+                    <div class="">
+                        <label class="">Start Date:</label>
+                        <input type="date" id="startDate" class="">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-gray-600">End Date:</label>
-                        <input type="date" id="endDate" class="border rounded px-2 py-1">
+                    <div class="">
+                        <label class="">End Date:</label>
+                        <input type="date" id="endDate" class="">
                     </div>
-                    <button onclick="fetchTransactions()" class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+                    <button onclick="fetchTransactions()" class="">
                         Filter
                     </button>
                 </div>
             </div>
 
             <div id="loadingIndicator" class="hidden">
-                <div class="flex justify-center items-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div class="">
+                    <div class=""></div>
                 </div>
             </div>
 
             <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50">
+            <div class="">
+                <table class="">
+                    <thead class="">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            <th class="">Date</th>
+                            <th class="">Category</th>
+                            <th class="">Amount</th>
+                            <th class="">Notes</th>
                         </tr>
                     </thead>
-                    <tbody id="transactionTable" class="bg-white divide-y divide-gray-200"></tbody>
+                    <tbody id="transactionTable" class=""></tbody>
                 </table>
             </div>
 
-            <div class="flex justify-between items-center mt-6">
-                <button id="prevButton" onclick="previousPage()" class="bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200 disabled:opacity-50">
+            <div class="">
+                <button id="prevButton" onclick="previousPage()" class="">
                     Previous
                 </button>
-                <span id="pageInfo" class="text-sm text-gray-600">Page 1</span>
-                <button id="nextButton" onclick="nextPage()" class="bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200 disabled:opacity-50">
+                <span id="pageInfo" class="">Page 1</span>
+                <button id="nextButton" onclick="nextPage()" class="">
                     Next
                 </button>
             </div>
         </div>
     </div>
-    </div>
+        </div>  
+
+
     <script src="navigation.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -134,9 +136,9 @@
         }
 
         function formatAmount(amount) {
-            return new Intl.NumberFormat('en-US', {
+            return new Intl.NumberFormat('ne-IN', {
                 style: 'currency',
-                currency: 'USD'
+                currency: 'NPR'
             }).format(amount);
         }
 
