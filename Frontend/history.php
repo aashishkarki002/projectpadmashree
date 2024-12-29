@@ -1,75 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/history.css">
 </head>
-<body class="bg-gray-100">
-<div class="main">
-         <div class="top-bar">
+
+<body>
+    <div class="main">
+        <div class="top-bar">
             <div class="logo">
-                <img src="img/img.png" alt="" class="img"> 
+                <img src="img/img.png" alt="" class="img">
             </div>
             <div class="profile">
-            <button class="profile-trigger" onclick="toggleDropdown()">
-                <div class="profile-logo">
-                    <img src="./img/profile.jpg" alt="profile">
-                </div>
-                <h1>Profile</h1>
-            </button>
-            <div class="dropdown-content" id="myDropdown">
-                <div class="profile-info">
-                    <div class="profile-info-header">
+                <button class="profile-trigger" onclick="toggleDropdown()">
+                    <div class="profile-logo">
                         <img src="./img/profile.jpg" alt="profile">
-                        <span> Afno Budget</span>
                     </div>
+                    <h1>Profile</h1>
+                </button>
+                <div class="dropdown-content" id="myDropdown">
+                    <div class="profile-info">
+                        <div class="profile-info-header">
+                            <img src="./img/profile.jpg" alt="profile">
+                            <span> Afno Budget</span>
+                        </div>
+                    </div>
+                    <a href="setting.php" class="dropdown-item">Settings & privacy</a>
+                    <a href="logout.php" class="dropdown-item">Log Out</a>
                 </div>
-                <a href="setting.php" class="dropdown-item">Settings & privacy</a>
-                <a href="logout.php" class="dropdown-item">Log Out</a>
             </div>
         </div>
     </div>
-        </div>
-     
-        <div class="side-bar">
-            <div class="individual" id="home">
+
+    <div class="side-bar">
+        <div class="individual" id="home">
             <div><img src="icons/home.png" alt="" class="icons"></div>
             <div>Home</div>
         </div>
-            <div class="individual" id="stats">
+        <div class="individual" id="stats">
             <div><img src="icons/bar-chart-square-01.png" alt="" class="icons"></div>
             <div>Statistics</div>
         </div>
-            <div class="individual" id="summary">
+        <div class="individual" id="summary">
             <div><img src="icons/coins-rotate.png" alt="" class="icons"></div>
             <div>Summary</div>
         </div>
-            <div class="individual" id="history">
+        <div class="individual" id="history">
             <div><img src="icons/history.png" alt="" class="icons"></div>
             <div>History</div>
         </div>
-        
-        </div>
+    </div>
 
-        <div class="mid-bar">
-        <div class="">
+    <div class="mid-bar">
+        <div class="sub-mid">
             <div class="">
-                <h3 class="text-xl ">Transaction History</h3>
-                <div class="flex gap-4">
+                <h3 class="title">Recent Transaction</h3>
+                <div class="calendar">
                     <div class="">
-                        <label class="">Start Date:</label>
+                        <label class="calendar-title">Start Date:</label>
                         <input type="date" id="startDate" class="">
                     </div>
                     <div class="">
-                        <label class="">End Date:</label>
+                        <label class="calendar-title">End Date:</label>
                         <input type="date" id="endDate" class="">
                     </div>
-                    <button onclick="fetchTransactions()" class="">
-                        Filter
-                    </button>
+                    <div class="button">
+                        <button onclick="fetchTransactions()" class="filter">
+                            Filter
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -78,39 +82,31 @@
                     <div class=""></div>
                 </div>
             </div>
-
+            
             <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
 
             <div class="">
-                <table class="">
-                    <thead class="">
-                        <tr>
-                            <th class="">Date</th>
-                            <th class="">Category</th>
-                            <th class="">Amount</th>
-                            <th class="">Notes</th>
-                        </tr>
+                <table class="transaction-table">
+                    <thead class="">                   
                     </thead>
-                    <tbody id="transactionTable" class=""></tbody>
+                    <tbody id="transactionTable" class="transacation-table"></tbody>
                 </table>
             </div>
 
-            <div class="">
-                <button id="prevButton" onclick="previousPage()" class="">
+            <div class="page">
+                <button id="prevButton" onclick="previousPage()" class="previous">
                     Previous
                 </button>
-                <span id="pageInfo" class="">Page 1</span>
-                <button id="nextButton" onclick="nextPage()" class="">
+                <span id="pageInfo" class="page-info">Page 1</span>
+                <button id="nextButton" onclick="nextPage()" class="next">
                     Next
                 </button>
             </div>
         </div>
     </div>
-        </div>  
-
+    </div>
 
     <script src="navigation.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script>
@@ -132,7 +128,16 @@
         }
 
         function formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString();
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function formatAmount(amount) {
+            const sign = amount >= 0 ? '+' : '-';
+            return `${sign} ${new Intl.NumberFormat('ne-IN', {
+                style: 'currency',
+                currency: 'NPR'
+            }).format(Math.abs(amount))}`;
         }
 
         function formatAmount(amount) {
@@ -140,6 +145,7 @@
                 style: 'currency',
                 currency: 'NPR'
             }).format(amount);
+
         }
 
         function updatePagination() {
@@ -185,11 +191,15 @@
                     data.data.transactions.forEach(transaction => {
                         const row = document.createElement('tr');
                         row.className = 'hover:bg-gray-50';
+                        const amountColor = parseFloat(transaction.amount) >= 0 ? 'text-green-600' : 'text-red-600';
                         row.innerHTML = `
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(transaction.date)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${transaction.category}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">${formatAmount(transaction.amount)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${transaction.notes || ''}</td>
+                         <div class="transaction">
+                        <div class="transaction-info">
+                         <div class="category">${transaction.category}</div>
+                            <div class="date">${formatDate(transaction.date)}</div>
+                           </div>
+                            <div class="amount ${amountColor} ">${formatAmount(Math.abs(transaction.amount))}</div>
+                            </div>
                         `;
                         tableBody.appendChild(row);
                     });
@@ -208,13 +218,14 @@
 
         // Initial load
         document.addEventListener('DOMContentLoaded', fetchTransactions);
+
         function toggleDropdown() {
             document.getElementById("myDropdown").classList.toggle("show");
         }
 
         // Close dropdown when clicking outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.profile-trigger') && 
+        window.onclick = function (event) {
+            if (!event.target.matches('.profile-trigger') &&
                 !event.target.matches('.profile-trigger *')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -227,4 +238,5 @@
         }
     </script>
 </body>
+
 </html>

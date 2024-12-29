@@ -1,0 +1,108 @@
+body{
+    background-color: #f3f4f6;
+}
+
+.title{
+font-weight: bolder;
+font-size: 30px;
+margin-left: 0;
+text-align: center;
+}
+.calendar{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    align-content: center;
+    margin-top: 20px;
+    width: 900px;
+    margin-left: 150px;
+    
+    
+    
+}
+input{
+    padding: 5px 5px;
+    margin-left: 12px;
+    margin-right: 6px;
+    height: 30px;
+}
+.calendar-title{
+    font-size: 18px;
+}
+.filter{
+width: 60px;
+height: 30px;
+background-color:  rgba(1, 137, 71, 1);
+border-radius: 5px;
+color: white;
+
+}
+.button{
+ margin-top: -12px;
+ margin-left: 10px;
+}
+.transaction{
+    display: flex;
+    justify-content: space-between;
+    width: 730px;
+
+}
+.transaction-info{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+}
+.category{
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 18px;
+    padding-left: 16px;
+
+}
+.date{
+    color: rgb(80, 80, 80);
+    font-size: 14px;
+    padding-left: 16px;
+}
+.amount {
+    font-size: 16px;
+    padding-right: 16px;
+    min-width: 120px; 
+    text-align: right;
+}
+.transaction-table{
+    margin-left: 150px;
+}
+.mid-bar{
+    color: #4b5563;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: white;
+    
+}
+.sub-mid{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+   
+}
+.side-bar{
+    background-color: white;
+}
+.page{
+  margin-left: 400px;
+  margin-top: 30px;
+}
+.next{
+    background-color: darkblue;
+    height: 40px;
+    width: 60px;
+    color: white;
+    border-radius: 5px;
+}
+.previous{
+    height: 40px;
+    width: 70px;
+    border-radius: 5px;
+    background-color: darkblue;
+    color: white;
+    
+}
