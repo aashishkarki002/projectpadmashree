@@ -1,62 +1,89 @@
 <?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
 header('Content-Type: application/json');
 
-// Include the database connection
-include("connect.php");
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'User not logged in.']);
+require_once("connect.php");
+
+function sendJsonResponse($data, $statusCode = 200) {
+    http_response_code($statusCode);
+    echo json_encode($data, JSON_THROW_ON_ERROR);
     exit;
 }
 
-// Retrieve the user ID from the session
-$user_id = $_SESSION['user_id'];
+// Check if user is logged in
+if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
+    sendJsonResponse(["status" => "error", "message" => "Unauthorized access"], 401);
+}
+
+$user_id = (int)$_SESSION['user_id'];
 
 try {
-    // Query for total income
-    $income_query = "SELECT SUM(amount) AS total_income FROM income WHERE u_id = ?";
-    $income_stmt = $conn->prepare($income_query);
-    $income_stmt->bind_param('i', $user_id);
-    $income_stmt->execute();
-    $income_result = $income_stmt->get_result();
-    $income_data = $income_result->fetch_assoc();
-    $total_income = $income_data['total_income'] ?? 0; // Default to 0 if null
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        // Fetch transactions
+        $query = "SELECT * FROM transactions WHERE user_id = ?";
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+        $result = $stmt->get_result();
 
-    // Query for total expenses
-    $expense_query = "SELECT SUM(amount) AS total_expense FROM expense WHERE u_id = ?";
-    $expense_stmt = $conn->prepare($expense_query);
-    $expense_stmt->bind_param('i', $user_id);
-    $expense_stmt->execute();
-    $expense_result = $expense_stmt->get_result();
-    $expense_data = $expense_result->fetch_assoc();
-    $total_expense = $expense_data['total_expense'] ?? 0; // Default to 0 if null
+        $transactions = [];
+        while ($row = $result->fetch_assoc()) {
+            $transactions[] = $row;
+        }
 
-    // Calculate balance
-    $balance = $total_income - $total_expense;
+        sendJsonResponse(["status" => "success", "data" => $transactions]);
 
-    // Prepare the response
-    $response = [
-        'total_income' => $total_income,
-        'total_expense' => $total_expense,
-        'balance' => $balance
-    ];
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Add a new transaction
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) {
+            sendJsonResponse(["status" => "error", "message" => "Invalid input"], 400);
+        }
 
-    // Encode the response as JSON and output it
-    echo json_encode($response);
+        $type = $data['type'] ?? null;
+        $amount = $data['amount'] ?? null;
+        $category = $data['category'] ?? null;
+        $date = $data['date'] ?? null;
+        $notes = $data['notes'] ?? null;
 
+        if (!$type || !$amount || !$category || !$date) {
+            sendJsonResponse(["status" => "error", "message" => "Missing required fields"], 400);
+        }
+
+        $query = "INSERT INTO transactions (user_id, type, amount, category, date, notes) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+        $stmt->bind_param("isdsss", $user_id, $type, $amount, $category, $date, $notes);
+
+        if ($stmt->execute()) {
+            sendJsonResponse(["status" => "success", "message" => "Transaction added successfully"]);
+        } else {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+
+    } else {
+        sendJsonResponse(["status" => "error", "message" => "Invalid request method"], 405);
+    }
 } catch (Exception $e) {
-    // Handle any errors
-    echo json_encode(['error' => 'An error occurred: ' . $e->getMessage()]);
+    error_log("Error: " . $e->getMessage());
+    sendJsonResponse(["status" => "error", "message" => "An error occurred"], 500);
 } finally {
-    // Close the database connection
-    $conn->close();
-    exit;
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
 ?>
