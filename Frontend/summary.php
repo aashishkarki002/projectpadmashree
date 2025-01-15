@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -35,7 +35,7 @@
                 <div><img src="icons/history.png" alt="" class="icons"></div>
                 <div>History</div>
             </div>
-                <div class="individual" id="setting" id="setting">
+                <div class="individual" id="setting">
                 <div><img src="icons/Vector.png" alt="" class="icons"></div>
                 <div>Settings</div>
             </div>
@@ -126,97 +126,199 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-    $(document).ready(function() {
+   
+    </script>
+<script>
+ $(document).ready(function() {
+    // Initialize charts
+    let monthlyTrendChart;
+    let categoryChart;
+
+    function initializeCharts() {
+        // Monthly Trend Chart
+        const monthlyCtx = document.createElement('canvas');
+        document.querySelector('.chart-card:nth-child(1) .chart').innerHTML = '';
+        document.querySelector('.chart-card:nth-child(1) .chart').appendChild(monthlyCtx);
+
+        // Category Breakdown Chart
+        const categoryCtx = document.createElement('canvas');
+        document.querySelector('.chart-card:nth-child(2) .chart').innerHTML = '';
+        document.querySelector('.chart-card:nth-child(2) .chart').appendChild(categoryCtx);
+
+        return {
+            monthlyCtx,
+            categoryCtx
+        };
+    }
+
+    function createMonthlyTrendChart(ctx, data) {
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.months,
+                datasets: [{
+                    label: 'Expenses',
+                    data: data.expenses,
+                    borderColor: '#ef4444',
+                    tension: 0.4,
+                    fill: false
+                }, {
+                    label: 'Income',
+                    data: data.income,
+                    borderColor: '#10b981',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Income vs Expenses'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => `$${value.toLocaleString()}`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createCategoryChart(ctx, data) {
+        return new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.categories,
+                datasets: [{
+                    data: data.amounts,
+                    backgroundColor: [
+                        '#ef4444',
+                        '#f97316',
+                        '#f59e0b',
+                        '#10b981',
+                        '#06b6d4',
+                        '#6366f1'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Expenses by Category'
+                    },
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `$${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateProgressBar(percentage) {
+        const fillElement = document.querySelector('.progress-bar .fill');
+        const widthPercentage = Math.min(100, Math.max(0, 100 - percentage));
+        fillElement.style.width = `${widthPercentage}%`;
+        
+        // Update color based on budget status
+        if (percentage > 0) {
+            fillElement.style.backgroundColor = '#10b981'; // Green for under budget
+        } else {
+            fillElement.style.backgroundColor = '#ef4444'; // Red for over budget
+        }
+    }
+
+    // Main data fetch and update function
+    function fetchAndUpdateDashboard() {
         $.ajax({
             url: '../backend/sum_fetch.php',
             method: 'GET',
             dataType: 'json',
             success: function(data) {
-                // Bar Chart for Income vs Expenses
-                const ctxTrend = document.getElementById('trendChart').getContext('2d');
-                new Chart(ctxTrend, {
-                    type: 'bar',
-                    data: {
-                        labels: Array.from({length: data.incomeData.length}, (_, i) => `Month ${i + 1}`),
-                        datasets: [
-                            {
-                                label: 'Income',
-                                data: data.incomeData,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'Expenses',
-                                data: data.expenseData,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+                if (data.success) {
+                    // Update summary cards with error checking
+                    try {
+                        // Total Expenses
+                        $('.stat-card:nth-child(1) .amount').text(`$${(data.total_expenses || 0).toLocaleString()}`);
+                        $('.stat-card:nth-child(1) .trend').html(
+                            `<i class="fas fa-arrow-${data.expense_change >= 0 ? 'up' : 'down'}"></i> 
+                            ${Math.abs(data.expense_change)}% from last month`
+                        );
+                        
+                        // Monthly Savings
+                        $('.stat-card:nth-child(2) .amount').text(`$${(data.monthly_savings || 0).toLocaleString()}`);
+                        $('.stat-card:nth-child(2) .trend').text(`${data.savings_percentage || 0}% of income`);
+                        
+                        // Budget Status
+                        const budgetStatus = data.budget_status || 0;
+                        const statusText = budgetStatus > 0 ? 'On Track' : 'Over Budget';
+                        const statusColor = budgetStatus > 0 ? '#10b981' : '#ef4444';
+                        
+                        $('.stat-card:nth-child(4) .amount').text(statusText).css('color', statusColor);
+                        $('.stat-card:nth-child(4) div:nth-child(3)').text(
+                            `${Math.abs(budgetStatus)}% ${budgetStatus > 0 ? 'under' : 'over'} budget`
+                        );
+                        
+                        // Update progress bar
+                        updateProgressBar(budgetStatus);
 
-                // Pie Chart for Expense Categories
-                const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-                new Chart(ctxCategory, {
-                    type: 'pie',
-                    data: {
-                        labels: data.categoryLabels,
-                        datasets: [{
-                            data: data.categoryData,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
+                        // Initialize and update charts
+                        const { monthlyCtx, categoryCtx } = initializeCharts();
+                        
+                        if (monthlyTrendChart) {
+                            monthlyTrendChart.destroy();
+                        }
+                        if (categoryChart) {
+                            categoryChart.destroy();
+                        }
+                        
+                        monthlyTrendChart = createMonthlyTrendChart(monthlyCtx, {
+                            months: data.months || [],
+                            expenses: data.monthly_expenses || [],
+                            income: data.monthly_income || []
+                        });
+                        
+                        categoryChart = createCategoryChart(categoryCtx, {
+                            categories: data.expense_categories || [],
+                            amounts: data.category_amounts || []
+                        });
+
+                    } catch (err) {
+                        console.error("Error updating dashboard:", err);
                     }
-                });
+                } else {
+                    console.error("Data fetch was not successful:", data);
+                }
             },
             error: function(xhr, status, error) {
-                console.error("Error fetching summary data:", error);
+                console.error("Error fetching data:", error);
+                console.log("Server response:", xhr.responseText);
             }
         });
-    });
-    </script>
-<script>
-    $(document).ready(function() {
-    $.ajax({
-        url: '../backend/sum_fetch.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (data.success) {
-                // Update the "Largest Expense" card
-                $('.stat-card:nth-child(3) .amount').text(`$${data.largest_amount}`);
-            } else {
-                console.error("Error fetching largest expense:", data.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX error:", error);
-        }
-    });
+    }
+
+    // Initial fetch
+    fetchAndUpdateDashboard();
+
+    // Refresh data every 5 minutes
+    setInterval(fetchAndUpdateDashboard, 5 * 60 * 1000);
 });
 </script>
                     

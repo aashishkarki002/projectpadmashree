@@ -1,89 +1,138 @@
 <?php
 session_start();
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-require_once("connect.php");
-
-function sendJsonResponse($data, $statusCode = 200) {
-    http_response_code($statusCode);
-    echo json_encode($data, JSON_THROW_ON_ERROR);
-    exit;
-}
-
-// Check if user is logged in
-if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
-    sendJsonResponse(["status" => "error", "message" => "Unauthorized access"], 401);
-}
-
-$user_id = (int)$_SESSION['user_id'];
-
 try {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // Fetch transactions
-        $query = "SELECT * FROM transactions WHERE user_id = ?";
-        $stmt = $conn->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param("i", $user_id);
-        if (!$stmt->execute()) {
-            throw new Exception("Execute failed: " . $stmt->error);
-        }
-        $result = $stmt->get_result();
+    // Database configuration
+    $host = 'localhost';
+    $dbname = 'project1';
+    $username = 'root';
+    $password = '';
 
-        $transactions = [];
-        while ($row = $result->fetch_assoc()) {
-            $transactions[] = $row;
-        }
-
-        sendJsonResponse(["status" => "success", "data" => $transactions]);
-
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Add a new transaction
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (!$data) {
-            sendJsonResponse(["status" => "error", "message" => "Invalid input"], 400);
-        }
-
-        $type = $data['type'] ?? null;
-        $amount = $data['amount'] ?? null;
-        $category = $data['category'] ?? null;
-        $date = $data['date'] ?? null;
-        $notes = $data['notes'] ?? null;
-
-        if (!$type || !$amount || !$category || !$date) {
-            sendJsonResponse(["status" => "error", "message" => "Missing required fields"], 400);
-        }
-
-        $query = "INSERT INTO transactions (user_id, type, amount, category, date, notes) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param("isdsss", $user_id, $type, $amount, $category, $date, $notes);
-
-        if ($stmt->execute()) {
-            sendJsonResponse(["status" => "success", "message" => "Transaction added successfully"]);
-        } else {
-            throw new Exception("Execute failed: " . $stmt->error);
-        }
-
-    } else {
-        sendJsonResponse(["status" => "error", "message" => "Invalid request method"], 405);
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception('User not logged in');
     }
+    
+    $user_id = $_SESSION['user_id'];
+    $currentMonth = date('m');
+    $currentYear = date('Y');
+
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
+
+    // Get current month's total expenses
+    $currentExpensesStmt = $pdo->prepare("
+        SELECT COALESCE(SUM(amount), 0) as total
+        FROM expense
+        WHERE u_id = ? AND MONTH(date) = ? AND YEAR(date) = ?
+    ");
+    $currentExpensesStmt->execute([$user_id, $currentMonth, $currentYear]);
+    $currentExpenses = $currentExpensesStmt->fetch()['total'];
+
+    // Get last month's expenses
+    $lastMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
+    $lastYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
+    
+    $lastExpensesStmt = $pdo->prepare("
+        SELECT COALESCE(SUM(amount), 0) as total
+        FROM expense
+        WHERE u_id = ? AND MONTH(date) = ? AND YEAR(date) = ?
+    ");
+    $lastExpensesStmt->execute([$user_id, $lastMonth, $lastYear]);
+    $lastExpenses = $lastExpensesStmt->fetch()['total'];
+
+    // Calculate expense change percentage
+    $expenseChange = $lastExpenses > 0 
+        ? round((($currentExpenses - $lastExpenses) / $lastExpenses) * 100, 1)
+        : 0;
+
+    // Get category breakdown
+    $categoryStmt = $pdo->prepare("
+        SELECT 
+            category,
+            COALESCE(SUM(amount), 0) as total
+        FROM expense
+        WHERE u_id = ? 
+        AND MONTH(date) = ? 
+        AND YEAR(date) = ?
+        GROUP BY category
+        ORDER BY total DESC
+    ");
+    $categoryStmt->execute([$user_id, $currentMonth, $currentYear]);
+    $categories = $categoryStmt->fetchAll();
+
+    // Get monthly trend data (last 6 months)
+    $monthlyTrendStmt = $pdo->prepare("
+        SELECT 
+            DATE_FORMAT(date, '%Y-%m') as month,
+            COALESCE(SUM(amount), 0) as total
+        FROM expense
+        WHERE u_id = ?
+        AND date >= DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH)
+        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        ORDER BY month ASC
+    ");
+    $monthlyTrendStmt->execute([$user_id]);
+    $monthlyTrend = $monthlyTrendStmt->fetchAll();
+
+    // Mock income data (replace with actual income table if available)
+    $monthlyIncome = 3000; // Example fixed monthly income
+    $monthlySavings = $monthlyIncome - $currentExpenses;
+    $savingsPercentage = round(($monthlySavings / $monthlyIncome) * 100, 1);
+
+    // Prepare data for charts
+    $months = [];
+    $expenses = [];
+    $income = [];
+    foreach ($monthlyTrend as $trend) {
+        $months[] = date('M', strtotime($trend['month'] . '-01'));
+        $expenses[] = floatval($trend['total']);
+        $income[] = $monthlyIncome; // Using mock fixed income
+    }
+
+    $expenseCategories = [];
+    $categoryAmounts = [];
+    foreach ($categories as $category) {
+        $expenseCategories[] = $category['category'];
+        $categoryAmounts[] = floatval($category['total']);
+    }
+
+    // Calculate budget status (assuming budget is 80% of income)
+    $monthlyBudget = $monthlyIncome * 0.8;
+    $budgetStatus = round((($monthlyBudget - $currentExpenses) / $monthlyBudget) * 100, 1);
+
+    // Prepare response
+    $response = [
+        'success' => true,
+        'total_expenses' => $currentExpenses,
+        'expense_change' => $expenseChange,
+        'monthly_savings' => $monthlySavings,
+        'savings_percentage' => $savingsPercentage,
+        'budget_status' => $budgetStatus,
+        'months' => $months,
+        'monthly_expenses' => $expenses,
+        'monthly_income' => $income,
+        'expense_categories' => $expenseCategories,
+        'category_amounts' => $categoryAmounts,
+        'largest_expense' => !empty($categories) ? [
+            'category' => $categories[0]['category'],
+            'amount' => $categories[0]['total']
+        ] : null
+    ];
+
+    echo json_encode($response);
+
 } catch (Exception $e) {
-    error_log("Error: " . $e->getMessage());
-    sendJsonResponse(["status" => "error", "message" => "An error occurred"], 500);
-} finally {
-    if (isset($stmt)) {
-        $stmt->close();
-    }
-    if (isset($conn)) {
-        $conn->close();
-    }
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
-?>

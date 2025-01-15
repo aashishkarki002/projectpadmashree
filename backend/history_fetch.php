@@ -14,7 +14,7 @@ function sendJsonResponse($data, $statusCode = 200) {
     exit;
 }
 
-// Validate user session
+
 if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
     sendJsonResponse([
         "status" => "error",

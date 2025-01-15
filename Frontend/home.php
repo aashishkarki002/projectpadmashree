@@ -34,6 +34,7 @@ session_start();
     }
     ?>
 </datalist>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="main">
@@ -52,7 +53,7 @@ session_start();
                 <div class="profile-info">
                     <div class="profile-info-header">
                         <img src="./img/profile.jpg" alt="profile">
-                        <span> Afno Budget</span>
+                        <span>  <?php echo strtoupper( htmlspecialchars($_SESSION['firstname'])); ?></span>
                     </div>
                 </div>
                 <a href="setting.php" class="dropdown-item">Settings & privacy</a>
@@ -151,6 +152,8 @@ session_start();
     </div>
 
 
+
+
 </div>
 </div>
 <div>
@@ -200,6 +203,65 @@ function toggleDropdown() {
             }
         }
     
+</script>
+<script>
+    // Add this to your existing JavaScript code
+$(document).ready(function() {
+    // Intercept the income form submission
+    $('form[action="../backend/income_insert.php"]').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        $.ajax({
+            url: '../backend/income_insert.php',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // Show budget prompt modal after successful income addition
+                Swal.fire({
+                    title: 'Set Budget',
+                    html: `
+                        <input type="number" id="budget-amount" class="swal2-input" placeholder="Enter your budget">
+                        <select id="budget-period" class="swal2-input">
+                            <option value="monthly">Monthly</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save Budget',
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        const budgetAmount = document.getElementById('budget-amount').value;
+                        const budgetPeriod = document.getElementById('budget-period').value;
+                        
+                        return $.ajax({
+                            url: '../backend/save_budget.php',
+                            method: 'POST',
+                            data: {
+                                amount: budgetAmount,
+                                period: budgetPeriod
+                            }
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire('Success', 'Budget has been set successfully!', 'success');
+                        // Refresh the page or update necessary elements
+                        location.reload();
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
+                Swal.fire('Error', 'Failed to add income', 'error');
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>

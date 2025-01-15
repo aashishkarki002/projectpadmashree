@@ -1,0 +1,25 @@
+{
+    "expenses": [],
+    "categories": [
+        {
+            "id": 1,
+            "name": "Housing",
+            "icon": "fas fa-home"
+        },
+        {
+            "id": 2,
+            "name": "Food",
+            "icon": "fas fa-utensils"
+        },
+        {
+            "id": 3,
+            "name": "Transportation",
+            "icon": "fas fa-car"
+        },
+        {
+            "id": 4,
+            "name": "Utilities",
+            "icon": "fas fa-plug"
+        }
+    ]
+}
