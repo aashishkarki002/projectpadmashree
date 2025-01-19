@@ -92,7 +92,7 @@ color: white;
   margin-top: 30px;
 }
 .next{
-    background-color: darkblue;
+    background-color: rgba(1, 137, 71, 1);
     height: 40px;
     width: 60px;
     color: white;
@@ -103,7 +103,7 @@ color: white;
     height: 40px;
     width: 70px;
     border-radius: 5px;
-    background-color: darkblue;
+    background-color: rgba(1, 137, 71, 1);
     color: white;
 
     

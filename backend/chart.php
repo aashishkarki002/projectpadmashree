@@ -24,164 +24,144 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
 
 $user_id = (int)$_SESSION['user_id'];
 
+// Get and validate time period
+$period = $_GET['period'] ?? 'month';
+if (!in_array($period, ['week', 'month', 'year'])) {
+    $period = 'month';
+}
+
 try {
     // Check if database connection is established
     if (!isset($conn)) {
         throw new Exception("Database connection not established");
     }
 
-    // Fetch monthly totals from income table
-    $monthlyIncomeQuery = "
+    // Define date format and interval based on period
+    switch ($period) {
+        case 'week':
+            $dateFormat = '%Y-%u'; // Year-Week
+            $interval = '6 WEEK';
+            $currentPeriodCondition = 'YEARWEEK(date, 1) = YEARWEEK(CURRENT_DATE, 1)';
+            break;
+        case 'year':
+            $dateFormat = '%Y';
+            $interval = '5 YEAR';
+            $currentPeriodCondition = 'YEAR(date) = YEAR(CURRENT_DATE)';
+            break;
+        default: // month
+            $dateFormat = '%Y-%m';
+            $interval = '6 MONTH';
+            $currentPeriodCondition = 'DATE_FORMAT(date, "%Y-%m") = DATE_FORMAT(CURRENT_DATE, "%Y-%m")';
+    }
+
+    // Fetch totals from income table
+    $incomeQuery = "
         SELECT 
-            DATE_FORMAT(date, '%Y-%m') as month,
+            DATE_FORMAT(date, ?) as period,
             SUM(amount) as total_income
         FROM income 
         WHERE u_id = ?
-        AND date >= DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH)
-        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        AND date >= DATE_SUB(CURRENT_DATE, INTERVAL $interval)
+        GROUP BY DATE_FORMAT(date, ?)
     ";
 
-    // Fetch monthly totals from expense table
-    $monthlyExpenseQuery = "
+    // Fetch totals from expense table
+    $expenseQuery = "
         SELECT 
-            DATE_FORMAT(date, '%Y-%m') as month,
+            DATE_FORMAT(date, ?) as period,
             SUM(amount) as total_expense
         FROM expense
         WHERE u_id = ?
-        AND date >= DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH)
-        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        AND date >= DATE_SUB(CURRENT_DATE, INTERVAL $interval)
+        GROUP BY DATE_FORMAT(date, ?)
     ";
 
-    // Fetch category breakdown for income
-    $incomeCategoryQuery = "
+    // Fetch current period totals
+    $currentPeriodQuery = "
         SELECT 
-            category,
-            SUM(amount) as total_amount
-        FROM income
-        WHERE u_id = ?
-        AND DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
-        GROUP BY category
-        ORDER BY total_amount DESC
+            (SELECT COALESCE(SUM(amount), 0) 
+             FROM income 
+             WHERE u_id = ? AND $currentPeriodCondition) as current_income,
+            (SELECT COALESCE(SUM(amount), 0) 
+             FROM expense 
+             WHERE u_id = ? AND $currentPeriodCondition) as current_expense
     ";
 
-    // Fetch category breakdown for expense
-    $expenseCategoryQuery = "
-        SELECT 
-            category,
-            SUM(amount) as total_amount
-        FROM expense
-        WHERE u_id = ?
-        AND DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
-        GROUP BY category
-        ORDER BY total_amount DESC
-    ";
-
-    // Execute income monthly query
-    $incomeStmt = $conn->prepare($monthlyIncomeQuery);
+    // Execute income query
+    $incomeStmt = $conn->prepare($incomeQuery);
     if (!$incomeStmt) {
         throw new Exception("Income prepare failed: " . $conn->error);
     }
-    $incomeStmt->bind_param("i", $user_id);
+    $incomeStmt->bind_param("sis", $dateFormat, $user_id, $dateFormat);
     if (!$incomeStmt->execute()) {
         throw new Exception("Income execute failed: " . $incomeStmt->error);
     }
     $incomeResult = $incomeStmt->get_result();
 
-    // Execute expense monthly query
-    $expenseStmt = $conn->prepare($monthlyExpenseQuery);
+    // Execute expense query
+    $expenseStmt = $conn->prepare($expenseQuery);
     if (!$expenseStmt) {
         throw new Exception("Expense prepare failed: " . $conn->error);
     }
-    $expenseStmt->bind_param("i", $user_id);
+    $expenseStmt->bind_param("sis", $dateFormat, $user_id, $dateFormat);
     if (!$expenseStmt->execute()) {
         throw new Exception("Expense execute failed: " . $expenseStmt->error);
     }
     $expenseResult = $expenseStmt->get_result();
 
-    // Execute income category query
-    $incomeCatStmt = $conn->prepare($incomeCategoryQuery);
-    if (!$incomeCatStmt) {
-        throw new Exception("Income category prepare failed: " . $conn->error);
+    // Execute current period query
+    $currentStmt = $conn->prepare($currentPeriodQuery);
+    if (!$currentStmt) {
+        throw new Exception("Current period prepare failed: " . $conn->error);
     }
-    $incomeCatStmt->bind_param("i", $user_id);
-    if (!$incomeCatStmt->execute()) {
-        throw new Exception("Income category execute failed: " . $incomeCatStmt->error);
+    $currentStmt->bind_param("ii", $user_id, $user_id);
+    if (!$currentStmt->execute()) {
+        throw new Exception("Current period execute failed: " . $currentStmt->error);
     }
-    $incomeCatResult = $incomeCatStmt->get_result();
+    $currentResult = $currentStmt->get_result();
 
-    // Execute expense category query
-    $expenseCatStmt = $conn->prepare($expenseCategoryQuery);
-    if (!$expenseCatStmt) {
-        throw new Exception("Expense category prepare failed: " . $conn->error);
-    }
-    $expenseCatStmt->bind_param("i", $user_id);
-    if (!$expenseCatStmt->execute()) {
-        throw new Exception("Expense category execute failed: " . $expenseCatStmt->error);
-    }
-    $expenseCatResult = $expenseCatStmt->get_result();
-
-    // Process monthly data
-    $monthlyData = [];
-    $monthlyIncomes = [];
-    $monthlyExpenses = [];
+    // Process trend data
+    $trendData = [];
+    $periodIncomes = [];
+    $periodExpenses = [];
 
     // Process income results
     while ($row = $incomeResult->fetch_assoc()) {
-        $monthlyIncomes[$row['month']] = (float)$row['total_income'];
+        $periodIncomes[$row['period']] = (float)$row['total_income'];
     }
 
     // Process expense results
     while ($row = $expenseResult->fetch_assoc()) {
-        $monthlyExpenses[$row['month']] = (float)$row['total_expense'];
+        $periodExpenses[$row['period']] = (float)$row['total_expense'];
     }
 
     // Combine income and expense data
-    $allMonths = array_unique(array_merge(array_keys($monthlyIncomes), array_keys($monthlyExpenses)));
-    sort($allMonths);
+    $allPeriods = array_unique(array_merge(array_keys($periodIncomes), array_keys($periodExpenses)));
+    sort($allPeriods);
 
-    foreach ($allMonths as $month) {
-        $income = $monthlyIncomes[$month] ?? 0;
-        $expense = $monthlyExpenses[$month] ?? 0;
-        $monthlyData[] = [
-            'month' => $month,
+    foreach ($allPeriods as $period_key) {
+        $income = $periodIncomes[$period_key] ?? 0;
+        $expense = $periodExpenses[$period_key] ?? 0;
+        $trendData[] = [
+            'month' => $period_key, // Keep 'month' key for frontend compatibility
             'income' => $income,
             'expense' => $expense,
             'balance' => $income - $expense
         ];
     }
 
-    // Process category data
-    $categoryData = [
-        'income' => [],
-        'expense' => []
-    ];
-
-    while ($row = $incomeCatResult->fetch_assoc()) {
-        $categoryData['income'][] = [
-            'category' => $row['category'],
-            'amount' => (float)$row['total_amount']
-        ];
-    }
-
-    while ($row = $expenseCatResult->fetch_assoc()) {
-        $categoryData['expense'][] = [
-            'category' => $row['category'],
-            'amount' => (float)$row['total_amount']
-        ];
-    }
-
-    // Calculate current month totals
-    $currentMonthIncome = array_sum(array_column($categoryData['income'], 'amount'));
-    $currentMonthExpense = array_sum(array_column($categoryData['expense'], 'amount'));
+    // Get current period totals
+    $currentPeriodData = $currentResult->fetch_assoc();
+    $currentIncome = (float)$currentPeriodData['current_income'];
+    $currentExpense = (float)$currentPeriodData['current_expense'];
 
     // Prepare response
     $response = [
-        'monthly' => $monthlyData,
-        'categories' => $categoryData,
-        'currentMonth' => [
-            'income' => $currentMonthIncome,
-            'expense' => $currentMonthExpense,
-            'balance' => $currentMonthIncome - $currentMonthExpense
+        'monthly' => $trendData, // Keep 'monthly' key for frontend compatibility
+        'currentMonth' => [ // Keep 'currentMonth' key for frontend compatibility
+            'income' => $currentIncome,
+            'expense' => $currentExpense,
+            'balance' => $currentIncome - $currentExpense
         ]
     ];
 
@@ -195,7 +175,8 @@ try {
         "message" => "An error occurred while fetching financial data",
         "debug" => [
             "error_message" => $e->getMessage(),
-            "user_id" => $user_id
+            "user_id" => $user_id,
+            "period" => $period
         ]
     ], 500);
 
@@ -203,8 +184,7 @@ try {
     // Close all statements
     if (isset($incomeStmt)) $incomeStmt->close();
     if (isset($expenseStmt)) $expenseStmt->close();
-    if (isset($incomeCatStmt)) $incomeCatStmt->close();
-    if (isset($expenseCatStmt)) $expenseCatStmt->close();
+    if (isset($currentStmt)) $currentStmt->close();
     if (isset($conn)) $conn->close();
 }
 ?>

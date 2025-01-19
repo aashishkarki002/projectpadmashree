@@ -80,8 +80,8 @@
                         <h3>Largest Expense</h3>
                         <i class="fas fa-chart-pie"></i>
                     </div>
-                    <div class="amount">Housing</div>
-                    <div class="trend">$1,200 this month</div>
+                    <div class="amount"></div>
+                    <div class="trend"></div>
                 </div>
 
                 <div class="stat-card">
@@ -299,7 +299,17 @@
                             categories: data.expense_categories || [],
                             amounts: data.category_amounts || []
                         });
-
+                        if (data.largest_expense) {
+                            $('.stat-card:nth-child(3) .amount').html(
+                                `$${data.largest_expense.amount.toLocaleString()}`
+                            );
+                            $('.stat-card:nth-child(3) .trend').html(
+                                `${data.largest_expense.category}`
+                            );
+                        } else {
+                            $('.stat-card:nth-child(3) .amount').text('No expenses');
+                            $('.stat-card:nth-child(3) .trend').text('');
+                        }
                     } catch (err) {
                         console.error("Error updating dashboard:", err);
                     }

@@ -37,6 +37,15 @@ try {
     $currentExpensesStmt->execute([$user_id, $currentMonth, $currentYear]);
     $currentExpenses = $currentExpensesStmt->fetch()['total'];
 
+    // Get current month's total income
+    $currentIncomeStmt = $pdo->prepare("
+        SELECT COALESCE(SUM(amount), 0) as total
+        FROM income
+        WHERE u_id = ? AND MONTH(date) = ? AND YEAR(date) = ?
+    ");
+    $currentIncomeStmt->execute([$user_id, $currentMonth, $currentYear]);
+    $currentIncome = $currentIncomeStmt->fetch()['total'];
+
     // Get last month's expenses
     $lastMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
     $lastYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
@@ -52,6 +61,12 @@ try {
     // Calculate expense change percentage
     $expenseChange = $lastExpenses > 0 
         ? round((($currentExpenses - $lastExpenses) / $lastExpenses) * 100, 1)
+        : 0;
+
+    // Calculate monthly savings
+    $monthlySavings = $currentIncome - $currentExpenses;
+    $savingsPercentage = $currentIncome > 0 
+        ? round(($monthlySavings / $currentIncome) * 100, 1)
         : 0;
 
     // Get category breakdown
@@ -83,11 +98,6 @@ try {
     $monthlyTrendStmt->execute([$user_id]);
     $monthlyTrend = $monthlyTrendStmt->fetchAll();
 
-    // Mock income data (replace with actual income table if available)
-    $monthlyIncome = 3000; // Example fixed monthly income
-    $monthlySavings = $monthlyIncome - $currentExpenses;
-    $savingsPercentage = round(($monthlySavings / $monthlyIncome) * 100, 1);
-
     // Prepare data for charts
     $months = [];
     $expenses = [];
@@ -95,7 +105,7 @@ try {
     foreach ($monthlyTrend as $trend) {
         $months[] = date('M', strtotime($trend['month'] . '-01'));
         $expenses[] = floatval($trend['total']);
-        $income[] = $monthlyIncome; // Using mock fixed income
+        $income[] = $currentIncome; // Using dynamically fetched income
     }
 
     $expenseCategories = [];
@@ -105,14 +115,25 @@ try {
         $categoryAmounts[] = floatval($category['total']);
     }
 
-    // Calculate budget status (assuming budget is 80% of income)
-    $monthlyBudget = $monthlyIncome * 0.8;
-    $budgetStatus = round((($monthlyBudget - $currentExpenses) / $monthlyBudget) * 100, 1);
+    // Get budget dynamically from the budget table
+    $budgetStmt = $pdo->prepare("
+        SELECT COALESCE(SUM(amount), 0) as total
+        FROM budgets
+        WHERE u_id = ? AND period = 'monthly'
+    ");
+    $budgetStmt->execute([$user_id]);
+    $monthlyBudget = $budgetStmt->fetch()['total'];
+
+    // Calculate budget status
+    $budgetStatus = $monthlyBudget > 0
+        ? round((($monthlyBudget - $currentExpenses) / $monthlyBudget) * 100, 1)
+        : 0;
 
     // Prepare response
     $response = [
         'success' => true,
         'total_expenses' => $currentExpenses,
+        'total_income' => $currentIncome,
         'expense_change' => $expenseChange,
         'monthly_savings' => $monthlySavings,
         'savings_percentage' => $savingsPercentage,
@@ -136,3 +157,4 @@ try {
         'message' => $e->getMessage()
     ]);
 }
+?>

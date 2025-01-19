@@ -205,14 +205,24 @@ function toggleDropdown() {
     
 </script>
 <script>
-    // Add this to your existing JavaScript code
+    // Replace your existing income form submission code with this:
 $(document).ready(function() {
-    // Intercept the income form submission
     $('form[action="../backend/income_insert.php"]').on('submit', function(e) {
         e.preventDefault();
         
         const formData = new FormData(this);
+        const form = this;
         
+        // First, validate the form
+        const category = formData.get('category');
+        const amount = formData.get('amount');
+        const date = formData.get('date');
+        
+        if (!category || !amount || !date) {
+            Swal.fire('Error', 'Please fill in all required fields', 'error');
+            return;
+        }
+
         $.ajax({
             url: '../backend/income_insert.php',
             method: 'POST',
@@ -220,48 +230,169 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(response) {
-                // Show budget prompt modal after successful income addition
-                Swal.fire({
-                    title: 'Set Budget',
-                    html: `
-                        <input type="number" id="budget-amount" class="swal2-input" placeholder="Enter your budget">
-                        <select id="budget-period" class="swal2-input">
-                            <option value="monthly">Monthly</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Save Budget',
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        const budgetAmount = document.getElementById('budget-amount').value;
-                        const budgetPeriod = document.getElementById('budget-period').value;
-                        
-                        return $.ajax({
-                            url: '../backend/save_budget.php',
-                            method: 'POST',
-                            data: {
-                                amount: budgetAmount,
-                                period: budgetPeriod
+                console.log('Income insert response:', response);
+                
+                try {
+                    const data = typeof response === 'string' ? JSON.parse(response) : response;
+                    
+                    if (data.success) {
+                        // Show success message first
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Income added successfully. Would you like to set a budget?',
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, set budget',
+                            cancelButtonText: 'No, skip'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Show budget prompt
+                                Swal.fire({
+                                    title: 'Set Budget',
+                                    html: `
+                                        <div class="form-group">
+                                            <label for="budget-category">Category</label>
+                                            <input list="expense-categories" id="budget-category" class="swal2-input" placeholder="Select category" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="budget-amount">Budget Amount</label>
+                                            <input type="number" id="budget-amount" class="swal2-input" placeholder="Enter your budget" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="budget-period">Period</label>
+                                            <select id="budget-period" class="swal2-input" required>
+                                                <option value="">Select period</option>
+                                                <option value="monthly">Monthly</option>
+                                                <option value="weekly">Weekly</option>
+                                                <option value="yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                    `,
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Save Budget',
+                                    showLoaderOnConfirm: true,
+                                    preConfirm: () => {
+                                        const budgetCategory = document.getElementById('budget-category').value;
+                                        const budgetAmount = document.getElementById('budget-amount').value;
+                                        const budgetPeriod = document.getElementById('budget-period').value;
+                                        
+                                        if (!budgetCategory || !budgetAmount || !budgetPeriod) {
+                                            Swal.showValidationMessage('Please fill in all fields');
+                                            return false;
+                                        }
+
+                                        if (budgetAmount <= 0) {
+                                            Swal.showValidationMessage('Please enter a valid amount');
+                                            return false;
+                                        }
+
+                                        return $.ajax({
+                                            url: '../backend/save_budget.php',
+                                            method: 'POST',
+                                            data: {
+                                                category: budgetCategory,
+                                                amount: budgetAmount,
+                                                period: budgetPeriod
+                                            },
+                                            dataType: 'json'
+                                        }).catch(error => {
+                                            console.error('Budget save error:', error);
+                                            throw new Error('Failed to save budget');
+                                        });
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        Swal.fire('Success', 'Budget has been set successfully!', 'success')
+                                        .then(() => {
+                                            // Refresh the page to update all values
+                                            location.reload();
+                                        });
+                                    }
+                                });
+                            } else {
+                                // Just reload to show the new income
+                                location.reload();
                             }
                         });
+
+                        // Reset the form
+                        form.reset();
+                        
+                        // Update the displayed amounts without page reload
+                        $.ajax({
+                            url: '../backend/fetch.php',
+                            method: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                if (!response.error) {
+                                    $('.income-amt').html("&#8360;" + response.total_income);
+                                    $('.expense-amt').html("&#8360;" + response.total_expense);
+                                    $('.balance-amt').html("&#8360;" + response.balance);
+                                }
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', data.error || 'Failed to add income', 'error');
                     }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire('Success', 'Budget has been set successfully!', 'success');
-                        // Refresh the page or update necessary elements
-                        location.reload();
-                    }
-                });
+                } catch (e) {
+                    console.error("Parse error:", e);
+                    console.log('Raw response:', response);
+                    Swal.fire('Error', 'Invalid server response', 'error');
+                }
             },
             error: function(xhr, status, error) {
-                console.error("Error:", error);
-                Swal.fire('Error', 'Failed to add income', 'error');
+                console.error("Ajax error:", {
+                    status: status,
+                    error: error,
+                    responseText: xhr.responseText
+                });
+                Swal.fire('Error', 'Failed to process request', 'error');
             }
         });
     });
 });
+</script>
+<script>
+    // Function to save budget
+    function saveBudget(amount) {
+        fetch('/backend/budget_operations.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: amount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Budget saved successfully!');
+                // Refresh the page or update the UI as needed
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the budget');
+        });
+    }
+
+    // Function to get current budget
+    function getCurrentBudget() {
+        fetch('/backend/budget_operations.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update your budget display
+                document.getElementById('currentBudget').textContent = data.budget;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 </script>
 </body>
 </html>

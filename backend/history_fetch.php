@@ -14,7 +14,6 @@ function sendJsonResponse($data, $statusCode = 200) {
     exit;
 }
 
-
 if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
     sendJsonResponse([
         "status" => "error",
@@ -24,9 +23,9 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
 
 $user_id = (int)$_SESSION['user_id'];
 
-// Optional parameters for pagination and filtering
+// Set fixed limit to 4 and get page number
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$limit = isset($_GET['limit']) ? min(100, max(1, (int)$_GET['limit'])) : 20;
+$limit = 4; // Fixed limit of 4 transactions
 $offset = ($page - 1) * $limit;
 
 // Optional filters
@@ -78,7 +77,7 @@ try {
         $types .= "s";
     }
 
-    // Add sorting and pagination
+    // Add sorting and pagination with fixed limit of 4
     $query = "SELECT *, COUNT(*) OVER() as final_count 
              FROM ($query) as filtered 
              ORDER BY date DESC 
@@ -107,8 +106,8 @@ try {
 
     while ($row = $result->fetch_assoc()) {
         $totalRecords = $row['final_count'];
-        unset($row['final_count']); // Remove count from individual records
-        unset($row['total_count']); // Remove intermediate count
+        unset($row['final_count']); 
+        unset($row['total_count']); 
 
         // Format date and amount
         $row['date'] = date('Y-m-d H:i:s', strtotime($row['date']));

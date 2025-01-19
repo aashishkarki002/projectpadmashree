@@ -1,65 +1,99 @@
 <?php
+// save_budget.php
 session_start();
-include("connect.php");
 
+// Set header to return JSON response
 header('Content-Type: application/json');
 
-if(isset($_POST['budget'])) {
-    try {
-        // Validate inputs
-        if(empty($_POST['category']) || empty($_POST['amount']) || empty($_POST['period'])) {
-            throw new Exception("All fields are required");
-        }
+try {
+    // Include database connection
+    require_once 'connect.php';
 
-        // Sanitize inputs
-        $user_id = $_SESSION['user_id'];
-        $category = mysqli_real_escape_string($conn, $_POST['category']);
-        $amount = mysqli_real_escape_string($conn, $_POST['amount']);
-        $period = mysqli_real_escape_string($conn, $_POST['period']);
-        $created_at = date('Y-m-d H:i:s');
-
-        // Check if budget exists
-        $check_query = "SELECT id FROM budgets WHERE u_id = ? AND category = ? AND period = ?";
-        $check_stmt = mysqli_prepare($conn, $check_query);
-        
-        if(!$check_stmt) {
-            throw new Exception("Database error: " . mysqli_error($conn));
-        }
-
-        mysqli_stmt_bind_param($check_stmt, "iss", $user_id, $category, $period);
-        mysqli_stmt_execute($check_stmt);
-        mysqli_stmt_store_result($check_stmt);
-
-        if(mysqli_stmt_num_rows($check_stmt) > 0) {
-            // Update existing budget
-            $update_query = "UPDATE budgets SET amount = ?, updated_at = ? WHERE u_id = ? AND category = ? AND period = ?";
-            $stmt = mysqli_prepare($conn, $update_query);
-            mysqli_stmt_bind_param($stmt, "dsiss", $amount, $created_at, $user_id, $category, $period);
-        } else {
-            // Insert new budget
-            $insert_query = "INSERT INTO budgets (u_id, category, amount, period, created_at) VALUES (?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $insert_query);
-            mysqli_stmt_bind_param($stmt, "isdss", $user_id, $category, $amount, $period, $created_at);
-        }
-
-        if(!$stmt) {
-            throw new Exception("Database error: " . mysqli_error($conn));
-        }
-
-        if(mysqli_stmt_execute($stmt)) {
-            echo json_encode(['success' => true]);
-        } else {
-            throw new Exception("Failed to save budget: " . mysqli_error($conn));
-        }
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-    } finally {
-        if(isset($check_stmt)) mysqli_stmt_close($check_stmt);
-        if(isset($stmt)) mysqli_stmt_close($stmt);
-        mysqli_close($conn);
+    // Verify user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception('User not authenticated');
     }
-} else {
-    echo json_encode(['success' => false, 'error' => 'Invalid request']);
+
+    // Validate request method
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
+    }
+
+    // Get and sanitize inputs
+    $category = mysqli_real_escape_string($conn, $_POST['category'] ?? '');
+    $amount = floatval($_POST['amount'] ?? 0);
+    $period = mysqli_real_escape_string($conn, $_POST['period'] ?? '');
+    $userId = $_SESSION['user_id'];
+
+    // Validate required fields
+    if (empty($category) || empty($amount) || empty($period)) {
+        throw new Exception('Missing required fields');
+    }
+
+    // Validate amount
+    if ($amount <= 0) {
+        throw new Exception('Invalid amount');
+    }
+
+    // Validate period
+    $validPeriods = ['weekly', 'monthly', 'yearly'];
+    if (!in_array($period, $validPeriods)) {
+        throw new Exception('Invalid period');
+    }
+
+    // Prepare SQL statement with correct column names
+    $query = "INSERT INTO budgets (u_id, category, amount, period, created_at) 
+             VALUES (?, ?, ?, ?, NOW()) 
+             ON DUPLICATE KEY UPDATE 
+             amount = ?, 
+             period = ?, 
+             updated_at = NOW()";
+
+    // Prepare and bind parameters
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "isdssd", 
+        $userId, 
+        $category, 
+        $amount, 
+        $period, 
+        $amount,  // For the UPDATE part
+        $period   // For the UPDATE part
+    );
+
+    // Execute statement
+    $success = mysqli_stmt_execute($stmt);
+
+    if (!$success) {
+        throw new Exception('Failed to save budget: ' . mysqli_error($conn));
+    }
+
+    // Close statement
+    mysqli_stmt_close($stmt);
+
+    // Return success response
+    echo json_encode([
+        'success' => true,
+        'message' => 'Budget saved successfully',
+        'data' => [
+            'category' => $category,
+            'amount' => $amount,
+            'period' => $period
+        ]
+    ]);
+
+} catch (Exception $e) {
+    // Log error
+    error_log("Budget save error: " . $e->getMessage());
+    
+    // Return error response
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
-?>
+
+// Close connection
+if (isset($conn)) {
+    mysqli_close($conn);
+}
