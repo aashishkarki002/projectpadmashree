@@ -42,9 +42,7 @@ if (isset($_SESSION['error'])) {
                     </div>
                 <?php endif; ?>
 </div>
-<div class="forgot-pass">
-    Forgot password?
-</div>
+
 
 <div class="term">Dont have an account? <a href="signup.php">Signup</a> </div>
 </span><div class="create_account">

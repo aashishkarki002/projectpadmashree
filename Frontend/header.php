@@ -1,133 +1,187 @@
-<!-- index.php -->
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BattleZoneHub</title>
+    <title>Dashboard</title>
     <style>
+        :root {
+            --topbar-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e4e8;
+            --dropdown-shadow: rgba(0, 0, 0, 0.1);
+            --hover-bg: #f5f7fa;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        .Heading {
-            background-color: #2E2E2E;
-            padding: 30px 60px;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 4rem;
+            padding: 0 1.5rem;
+            background-color: var(--topbar-bg);
+            border-bottom: 0.0625rem solid var(--border-color);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 100;
         }
 
-        .TOGETHER-name-logo {
+        .logo {
             display: flex;
             align-items: center;
         }
 
-        .Logo img {
-            width: 75px;
-            height: auto;
-        }
-
-        .web-name h1 {
-            font-size: 36px;
-            margin-left: 15px;
-            color: white;
+        .logo .img {
+            height: 2.5rem;
+            width: auto;
         }
 
         .profile {
             position: relative;
-            display: inline-block;
         }
 
         .profile-trigger {
             display: flex;
             align-items: center;
-            gap: 15px;
             background: none;
             border: none;
             cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
         }
 
-        .profile-logo img {
-            width: 40px;
-            height: 40px;
+        .profile-trigger:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .profile-logo {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 0.5rem;
+            overflow: hidden;
             border-radius: 50%;
         }
 
+        .profile-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .profile h1 {
-            color: white;
-            font-size: 24px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-color);
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
+            top: 3.5rem;
             background-color: white;
-            min-width: 250px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            z-index: 1;
-            margin-top: 10px;
+            min-width: 15rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem var(--dropdown-shadow);
+            border: 0.0625rem solid var(--border-color);
+            z-index: 101;
         }
 
-        .show {
+        .dropdown-content.show {
             display: block;
         }
 
         .profile-info {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
+            padding: 1rem;
+            border-bottom: 0.0625rem solid var(--border-color);
         }
 
         .profile-info-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 0.75rem;
         }
 
         .profile-info-header img {
-            width: 40px;
-            height: 40px;
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .profile-info-header span {
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text-color);
         }
 
         .dropdown-item {
-            padding: 12px 15px;
-            text-decoration: none;
             display: block;
-            color: black;
-            cursor: pointer;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background-color 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:first-of-type {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .dropdown-item:last-of-type {
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
         }
 
         .dropdown-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        .logout {
-            color: #ff0000;
-            border-top: 1px solid #ddd;
+            background-color: var(--hover-bg);
         }
     </style>
 </head>
 <body>
-    <div class="Heading">
-        <div class="TOGETHER-name-logo">
-            <div class="Logo">
-                <img src="./ASSETS/PROJECT-LOGO.png" alt="logo">
-            </div>
-            <div class="web-name">
-                <h1>BattleZoneHub</h1>
+    <div class="top-bar">
+        <div class="logo">
+            <img src="img/img.png" alt="Company Logo" class="img">
+        </div>
+        <div class="profile">
+            <button class="profile-trigger" onclick="toggleDropdown()">
+                <div class="profile-logo">
+                    <img src="./img/profile.jpg" alt="profile">
+                </div>
+                <h1>Profile</h1>
+            </button>
+            <div class="dropdown-content" id="myDropdown">
+                <div class="profile-info">
+                    <div class="profile-info-header">
+                        <img src="./img/profile.jpg" alt="profile">
+                        <span><?php echo strtoupper(htmlspecialchars($_SESSION['firstname'])); ?></span>
+                    </div>
+                </div>
+                <a href="setting.php" class="dropdown-item">Settings & privacy</a>
+                <a href="logout.php" class="dropdown-item">Log Out</a>
             </div>
         </div>
-       
+    </div>
 
     <script>
         function toggleDropdown() {

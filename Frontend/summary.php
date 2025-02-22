@@ -12,34 +12,12 @@
     </head>
     <body>
     <div class="main">
-            <div class="top-bar">
-                <div class="logo">
-                    <img src="img/img.png" alt="" class="img"> 
-                </div>
-            </div>
         
-            <div class="side-bar">
-            <div class="individual" id="home">
-                <div><img src="icons/home.png" alt="" class="icons"></div>
-                <div>Home</div>
-            </div>
-                <div class="individual" id="stats">
-                <div><img src="icons/bar-chart-square-01.png" alt="" class="icons"></div>
-                <div>Statistics</div>
-            </div>
-                <div class="individual" id="summary">
-                <div><img src="icons/coins-rotate.png" alt="" class="icons"></div>
-                <div>Summary</div>
-            </div>
-                <div class="individual" id="history">
-                <div><img src="icons/history.png" alt="" class="icons"></div>
-                <div>History</div>
-            </div>
-                <div class="individual" id="setting">
-                <div><img src="icons/Vector.png" alt="" class="icons"></div>
-                <div>Settings</div>
-            </div>
-            </div> 
+    <?php
+     include"header.php"
+     ?>
+        
+            <?php include 'sidebar.php'; ?> 
             <div class="mid-bar">
                 <div class="dash">Settings</div>
         
@@ -129,26 +107,25 @@
    
     </script>
 <script>
- $(document).ready(function() {
+$(document).ready(function() {
     // Initialize charts
     let monthlyTrendChart;
     let categoryChart;
 
     function initializeCharts() {
-        // Monthly Trend Chart
         const monthlyCtx = document.createElement('canvas');
         document.querySelector('.chart-card:nth-child(1) .chart').innerHTML = '';
         document.querySelector('.chart-card:nth-child(1) .chart').appendChild(monthlyCtx);
 
-        // Category Breakdown Chart
         const categoryCtx = document.createElement('canvas');
         document.querySelector('.chart-card:nth-child(2) .chart').innerHTML = '';
         document.querySelector('.chart-card:nth-child(2) .chart').appendChild(categoryCtx);
 
-        return {
-            monthlyCtx,
-            categoryCtx
-        };
+        return { monthlyCtx, categoryCtx };
+    }
+
+    function formatToNPR(value) {
+        return `रू${value.toLocaleString()}`;
     }
 
     function createMonthlyTrendChart(ctx, data) {
@@ -182,7 +159,7 @@
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: value => `$${value.toLocaleString()}`
+                            callback: value => formatToNPR(value)
                         }
                     }
                 }
@@ -197,33 +174,21 @@
                 labels: data.categories,
                 datasets: [{
                     data: data.amounts,
-                    backgroundColor: [
-                        '#ef4444',
-                        '#f97316',
-                        '#f59e0b',
-                        '#10b981',
-                        '#06b6d4',
-                        '#6366f1'
-                    ]
+                    backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#6366f1']
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Expenses by Category'
-                    },
-                    legend: {
-                        position: 'right'
-                    },
+                    title: { display: true, text: 'Expenses by Category' },
+                    legend: { position: 'right' },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
                                 const value = context.raw;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                 const percentage = ((value / total) * 100).toFixed(1);
-                                return `$${value.toLocaleString()} (${percentage}%)`;
+                                return `${formatToNPR(value)} (${percentage}%)`;
                             }
                         }
                     }
@@ -232,20 +197,6 @@
         });
     }
 
-    function updateProgressBar(percentage) {
-        const fillElement = document.querySelector('.progress-bar .fill');
-        const widthPercentage = Math.min(100, Math.max(0, 100 - percentage));
-        fillElement.style.width = `${widthPercentage}%`;
-        
-        // Update color based on budget status
-        if (percentage > 0) {
-            fillElement.style.backgroundColor = '#10b981'; // Green for under budget
-        } else {
-            fillElement.style.backgroundColor = '#ef4444'; // Red for over budget
-        }
-    }
-
-    // Main data fetch and update function
     function fetchAndUpdateDashboard() {
         $.ajax({
             url: '../backend/sum_fetch.php',
@@ -253,63 +204,33 @@
             dataType: 'json',
             success: function(data) {
                 if (data.success) {
-                    // Update summary cards with error checking
                     try {
-                        // Total Expenses
-                        $('.stat-card:nth-child(1) .amount').text(`$${(data.total_expenses || 0).toLocaleString()}`);
-                        $('.stat-card:nth-child(1) .trend').html(
-                            `<i class="fas fa-arrow-${data.expense_change >= 0 ? 'up' : 'down'}"></i> 
-                            ${Math.abs(data.expense_change)}% from last month`
-                        );
-                        
-                        // Monthly Savings
-                        $('.stat-card:nth-child(2) .amount').text(`$${(data.monthly_savings || 0).toLocaleString()}`);
-                        $('.stat-card:nth-child(2) .trend').text(`${data.savings_percentage || 0}% of income`);
-                        
-                        // Budget Status
-                        const budgetStatus = data.budget_status || 0;
-                        const statusText = budgetStatus > 0 ? 'On Track' : 'Over Budget';
-                        const statusColor = budgetStatus > 0 ? '#10b981' : '#ef4444';
-                        
-                        $('.stat-card:nth-child(4) .amount').text(statusText).css('color', statusColor);
-                        $('.stat-card:nth-child(4) div:nth-child(3)').text(
-                            `${Math.abs(budgetStatus)}% ${budgetStatus > 0 ? 'under' : 'over'} budget`
-                        );
-                        
-                        // Update progress bar
-                        updateProgressBar(budgetStatus);
+                        $('.stat-card:nth-child(1) .amount').text(formatToNPR(data.total_expenses || 0));
+                        $('.stat-card:nth-child(2) .amount').text(formatToNPR(data.monthly_savings || 0));
 
-                        // Initialize and update charts
+                        if (data.largest_expense) {
+                            $('.stat-card:nth-child(3) .amount').html(formatToNPR(data.largest_expense.amount));
+                            $('.stat-card:nth-child(3) .trend').html(data.largest_expense.category);
+                        } else {
+                            $('.stat-card:nth-child(3) .amount').text('No expenses');
+                            $('.stat-card:nth-child(3) .trend').text('');
+                        }
+
                         const { monthlyCtx, categoryCtx } = initializeCharts();
-                        
-                        if (monthlyTrendChart) {
-                            monthlyTrendChart.destroy();
-                        }
-                        if (categoryChart) {
-                            categoryChart.destroy();
-                        }
-                        
+
+                        if (monthlyTrendChart) monthlyTrendChart.destroy();
+                        if (categoryChart) categoryChart.destroy();
+
                         monthlyTrendChart = createMonthlyTrendChart(monthlyCtx, {
                             months: data.months || [],
                             expenses: data.monthly_expenses || [],
                             income: data.monthly_income || []
                         });
-                        
+
                         categoryChart = createCategoryChart(categoryCtx, {
                             categories: data.expense_categories || [],
                             amounts: data.category_amounts || []
                         });
-                        if (data.largest_expense) {
-                            $('.stat-card:nth-child(3) .amount').html(
-                                `$${data.largest_expense.amount.toLocaleString()}`
-                            );
-                            $('.stat-card:nth-child(3) .trend').html(
-                                `${data.largest_expense.category}`
-                            );
-                        } else {
-                            $('.stat-card:nth-child(3) .amount').text('No expenses');
-                            $('.stat-card:nth-child(3) .trend').text('');
-                        }
                     } catch (err) {
                         console.error("Error updating dashboard:", err);
                     }
@@ -324,12 +245,10 @@
         });
     }
 
-    // Initial fetch
     fetchAndUpdateDashboard();
-
-    // Refresh data every 5 minutes
     setInterval(fetchAndUpdateDashboard, 5 * 60 * 1000);
 });
+
 </script>
                     
     </body>

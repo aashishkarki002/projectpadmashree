@@ -73,7 +73,7 @@ function validateEmail() {
    if (emailParts.length > 1) {
      const domain = emailParts[1];
      if (!commonDomains.includes(domain)) {
-       emailMsg.innerText = `Did you mean @${commonDomains[0]}?`;
+      
        emailMsg.classList.add("error_msg");
      }
    } else {

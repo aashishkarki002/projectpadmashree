@@ -18,6 +18,9 @@ sidebar.forEach(item=>{
                     case 'summary':
                         window.location.href="summary.php"
                         break;
+                        case 'budget':
+                        window.location.href="budget.php"
+                        break;
                         case 'history':
                             window.location.href="history.php"
                             break;

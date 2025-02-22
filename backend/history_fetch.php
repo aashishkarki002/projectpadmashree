@@ -7,6 +7,7 @@ header('X-XSS-Protection: 1; mode=block');
 
 require_once("connect.php");
 
+
 // Function to send JSON response
 function sendJsonResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
@@ -37,6 +38,7 @@ try {
     // Combined query for both expenses and income using UNION
     $query = "SELECT 
                 'expense' as type,
+                e.id,
                 e.u_id,
                 e.amount,
                 e.category,
@@ -48,6 +50,7 @@ try {
             UNION ALL
             SELECT 
                 'income' as type,
+                i.id,
                 i.u_id,
                 i.amount,
                 i.category,
@@ -169,4 +172,5 @@ try {
     if (isset($conn)) {
         $conn->close();
     }
+    
 }

@@ -30,7 +30,7 @@ include("../backend/connect.php");
                     <div><input type="text" placeholder="last name" class="lastname" name="l_name" required></div>
                 </div>
                 <div><input type="email" placeholder="abc@example.com" class="email" name="email" id="email" required></div>
-                <div id="email_msg"></div>
+                <div id="email__msg"></div>
                 <div id="password_holder">
                     <div><input type="password" placeholder="password" class="pword" id="password" name="password" required></div>
                     <div class="" id="msg"></div>

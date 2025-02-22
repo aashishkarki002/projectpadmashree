@@ -115,11 +115,11 @@ try {
         $categoryAmounts[] = floatval($category['total']);
     }
 
-    // Get budget dynamically from the budget table
+    // Get budget dynamically from the budgets table (using 'goal' column instead of 'amount')
     $budgetStmt = $pdo->prepare("
         SELECT COALESCE(SUM(amount), 0) as total
         FROM budgets
-        WHERE u_id = ? AND period = 'monthly'
+        WHERE u_id = ?
     ");
     $budgetStmt->execute([$user_id]);
     $monthlyBudget = $budgetStmt->fetch()['total'];
