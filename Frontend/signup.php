@@ -48,9 +48,7 @@ include("../backend/connect.php");
         </div>
         </form>
     </div>
-    <script src="authentication.js">
 
-    </script>
 </body>
 
 </html>

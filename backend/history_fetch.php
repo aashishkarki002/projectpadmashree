@@ -7,7 +7,6 @@ header('X-XSS-Protection: 1; mode=block');
 
 require_once("connect.php");
 
-
 // Function to send JSON response
 function sendJsonResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
@@ -41,11 +40,12 @@ try {
                 e.id,
                 e.u_id,
                 e.amount,
-                e.category,
+                ec.category_name as category_name,
                 e.date,
                 e.notes,
                 COUNT(*) OVER() as total_count
             FROM expense e
+            JOIN expense_categories ec ON e.category_id = ec.id
             WHERE e.u_id = ?
             UNION ALL
             SELECT 
@@ -53,11 +53,12 @@ try {
                 i.id,
                 i.u_id,
                 i.amount,
-                i.category,
+                ic.category_name as category_name,
                 i.date,
                 i.notes,
                 COUNT(*) OVER() as total_count
             FROM income i
+            JOIN income_categories ic ON i.category_id = ic.id
             WHERE i.u_id = ?";
 
     $params = [$user_id, $user_id];
@@ -172,5 +173,4 @@ try {
     if (isset($conn)) {
         $conn->close();
     }
-    
 }

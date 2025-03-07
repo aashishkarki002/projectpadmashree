@@ -24,9 +24,14 @@ sidebar.forEach(item=>{
                         case 'history':
                             window.location.href="history.php"
                             break;
+                            case 'saving':
+                                window.location.href="saving.php"
+                                break;
                             case 'setting':
                                 window.location.href="setting.php"
                                 break;
+                              
+    
 
             default:
              break

@@ -1,4 +1,4 @@
-<?php
+        <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -30,7 +30,33 @@ error_reporting(E_ALL);
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-
+ /* Profile Dropdown */
+ .profile {
+      position: relative;
+      display: flex;
+      margin-left: 64.375rem;
+      margin-bottom: 0;
+    }
+    
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 0.9375rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .profile-logo img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
+    
+    .profile h1 {
+      color: black;
+      font-size: 1.5rem;
+    }
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -42,6 +68,7 @@ error_reporting(E_ALL);
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
             position: relative;
             z-index: 100;
+            padding-left: 180px;
         }
 
         .logo {
@@ -160,9 +187,7 @@ error_reporting(E_ALL);
 </head>
 <body>
     <div class="top-bar">
-        <div class="logo">
-            <img src="img/img.png" alt="Company Logo" class="img">
-        </div>
+
         <div class="profile">
             <button class="profile-trigger" onclick="toggleDropdown()">
                 <div class="profile-logo">

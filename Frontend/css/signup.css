@@ -1,57 +1,4 @@
 body{
-    background-color: rgba(202, 202, 202, 1);
-    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-.main{
-background-color: rgba(238, 238, 238, 1);
-height: 570px;
-width: 1240px;
-margin-left: 60px;
-margin-top: 30px;
-
-}
-.logo{
-    width: 400px;
-    padding-top: 30px;
-  margin-left: -70px;
-}
-.second-main{
-    background-color: white;
-    height: 520px;
-    width: 440px;
-    margin-left: 780px;
- margin-top: -240px;
- box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
- 
-
-}
-.title{
-  font-weight: bold;
-  font-size: 35px;
-  
-}
-.firstname,.lastname{
-  background-color: rgba(240, 240, 240, 1);
-  border: none;
-  border-radius: 4px;
-  padding: 8px ;
- }
-
- .names{
-  display: flex;
-  gap: 15px;
- }
- .email,.pword,.cpword{
-  background-color: rgba(240, 240, 240, 1);
-  background-color: rgba(240, 240, 240, 1);
-  border: none;
-  border-radius: 4px;
-  padding: 8px ;
-  display: flex;
-  margin-top: 15px;
-
- }
- body{
   background-color: rgba(202, 202, 202, 1);
   font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
@@ -73,6 +20,59 @@ margin-left: -70px;
   height: 520px;
   width: 440px;
   margin-left: 780px;
+margin-top: -240px;
+box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
+
+
+}
+.title{
+font-weight: bold;
+font-size: 35px;
+
+}
+.firstname,.lastname{
+background-color: rgba(240, 240, 240, 1);
+border: none;
+border-radius: 4px;
+padding: 8px ;
+}
+
+.names{
+display: flex;
+gap: 15px;
+}
+.email,.pword,.cpword{
+background-color: rgba(240, 240, 240, 1);
+background-color: rgba(240, 240, 240, 1);
+border: none;
+border-radius: 4px;
+padding: 8px ;
+display: flex;
+margin-top: 15px;
+
+}
+body{
+background-color: rgba(202, 202, 202, 1);
+font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.main{
+background-color: rgba(238, 238, 238, 1);
+height: 570px;
+width: 1240px;
+margin-left: 60px;
+margin-top: 30px;
+
+}
+.logo{
+width: 400px;
+padding-top: 30px;
+margin-left: -70px;
+}
+.second-main{
+background-color: white;
+height: 520px;
+width: 440px;
+margin-left: 780px;
 margin-top: -240px;
 box-shadow:  3px 4px 4px rgba(31, 31, 31, 0.3);
 
@@ -146,7 +146,7 @@ margin-left: 30px;
 }
 
 .button button:hover{
-  background-color: rgb(1, 99, 51);
+background-color: rgb(1, 99, 51);
 }
 
 .button{
@@ -178,26 +178,26 @@ width: 20px;
 margin-right: 10px;
 }
 .error_msg{
-  color: red;
-  font-size: 0.9em;
-  margin-top: 8px;
-  padding-left: 30px;
+color: red;
+font-size: 0.9em;
+margin-top: 8px;
+padding-left: 30px;
 }
 .success_msg{
-  color: green;
-  font-size: 0.9em;
-  margin-top: 8px;
-  padding-left: 30px;
+color: green;
+font-size: 0.9em;
+margin-top: 8px;
+padding-left: 30px;
 }
 .pwd_req{
-  color: red;
-  font-size: 0.9em;
-  margin-top: 8px;
-  padding-left: 30px;
+color: red;
+font-size: 0.9em;
+margin-top: 8px;
+padding-left: 30px;
 }
 #emailMsg{
-  color: red;
-  font-size: 0.9em;
-  margin-top: 8px;
-  padding-left: 30px;
+color: red;
+font-size: 0.9em;
+margin-top: 8px;
+padding-left: 30px;
 }
