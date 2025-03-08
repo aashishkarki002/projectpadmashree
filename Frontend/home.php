@@ -1,5 +1,11 @@
 <?php
+session_start(); // Start the session
 
+// Check if the user is logged in
+if (!isset($_SESSION['firstname'])) {
+    header("Location: login.php"); // Redirect to the login page if not logged in
+    exit(); // Ensure no further code is executed after the redirect
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,25 +58,25 @@
             <?php echo strtoupper(htmlspecialchars($_SESSION['firstname'])); ?>
             </div>
             <div class="transaction">
-                <div class="income" >
+                <div class="income">
                     <div class="title">Total income</div>
                     <div class="holder">
                     <div><img src="icons/icons8-income-50 1.png" alt="" class="transaction-icons"></div>
-                    <div class="income-amt">&#8360;0</div>
+                    <div class="income-amt">NPR0</div>
                 </div>
                 </div>
-                <div class="income" >
+                <div class="income">
                     <div class="title">Total Expense</div>
                     <div class="holder">
                     <div><img src="icons/icons8-expense-50 1.png" alt="" class="transaction-icons"></div>
-                    <div class="expense-amt">&#8360;0</div>
+                    <div class="expense-amt">NPR0</div>
                 </div>
                 </div>
-                <div class="income" >
+                <div class="income">
                     <div class="title"> Balance</div>
                     <div class="holder">
                     <div><img src="icons/icons8-balance-48 1.png" alt="" class="transaction-icons"></div>
-                    <div class="balance-amt">&#8360;0</div>
+                    <div class="balance-amt">NPR0</div>
                 </div>
                 </div>
             </div>
@@ -118,8 +124,7 @@
 <div>
 </div>
   </div>
-               
-    </div>
+                </div>
     <script src="navigation.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="home.js"></script>

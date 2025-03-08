@@ -144,6 +144,8 @@ try {
 
     // Prepare pagination metadata
     $totalPages = ceil($totalRecords / $limit);
+    error_log(json_encode($transactions, JSON_PRETTY_PRINT));
+
 
     sendJsonResponse([
         "status" => "success",

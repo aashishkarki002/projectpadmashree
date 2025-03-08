@@ -1,5 +1,3 @@
-
-
 $(document).ready(function() {
     // Initial load of account summary
     updateAccountSummary();
@@ -131,9 +129,9 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (!response.error) {
-                    $('.income-amt').html("&#8360;" + response.total_income);
-                    $('.expense-amt').html("&#8360;" + response.total_expense);
-                    $('.balance-amt').html("&#8360;" + response.balance);
+                    $('.income-amt').html("NPR " + formatToNPR(response.total_income));
+                    $('.expense-amt').html("NPR " + formatToNPR(response.total_expense));
+                    $('.balance-amt').html("NPR " + formatToNPR(response.balance));
                 } else {
                     console.error("Error in response:", response.error);
                 }
@@ -142,5 +140,10 @@ $(document).ready(function() {
                 console.error("Error fetching data:", error);
             }
         });
+    }
+
+    // Helper function to format numbers with commas (e.g., 1000 -> 1,000)
+    function formatToNPR(value) {
+        return value.toLocaleString('en-US');
     }
 });

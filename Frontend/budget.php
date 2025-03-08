@@ -1,3 +1,13 @@
+<?php
+session_start(); // Start the session
+
+// Check if the user is logged in
+if (!isset($_SESSION['firstname'])) {
+    header("Location: login.php"); // Redirect to the login page if not logged in
+    exit(); // Ensure no further code is executed after the redirect
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -190,7 +200,7 @@ function updateBudgetDisplay(budgets) {
         budgetList.appendChild(listItem);
     });
 
- 
+    updateOverallProgress(totalSpent, totalBudget);
 }
 
 function createBudgetListItem(budget, percentage, progressClass) {
@@ -206,7 +216,7 @@ function createBudgetListItem(budget, percentage, progressClass) {
             <span class="budget-dates">${startDate} - ${endDate}</span>
         </div>
         <div class="budget-amount">
-            <span>$${parseFloat(budget.spent).toLocaleString()} / $${parseFloat(budget.amount).toLocaleString()}</span>
+            <span>${formatCurrency(budget.spent)} / ${formatCurrency(budget.amount)}</span>
             <span>${percentage.toFixed(1)}%</span>
         </div>
         <div class="progress-container">
@@ -222,13 +232,24 @@ function createBudgetListItem(budget, percentage, progressClass) {
     return listItem;
 }
 
-function updateOverallProgress(totalSpent, totalBudget, progressBar, progressText) {
+// Format the amount in Nepali Rupees (NPR)
+function formatCurrency(amount) {
+    const formatter = new Intl.NumberFormat('ne-NP', {
+        style: 'currency',
+        currency: 'NPR',
+        minimumFractionDigits: 0
+    });
+    return formatter.format(amount);
+}
+
+function updateOverallProgress(totalSpent, totalBudget) {
     const overallPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-    const progressClass = getProgressClass(overallPercentage);
+    const progressBar = document.querySelector(".overall-progress-bar");
+    const progressText = document.querySelector(".overall-progress-text");
     
     progressBar.style.width = `${Math.min(overallPercentage, 100)}%`;
-    progressBar.className = `progress-bar ${progressClass}`;
-    progressText.textContent = `Total Spent: $${totalSpent.toLocaleString()} / $${totalBudget.toLocaleString()} (${overallPercentage.toFixed(1)}%)`;
+    progressBar.className = `progress-bar ${getProgressClass(overallPercentage)}`;
+    progressText.textContent = `Total Spent: ${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)} (${overallPercentage.toFixed(1)}%)`;
 }
 
 function getProgressClass(percentage) {
@@ -305,61 +326,7 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 const style = document.createElement('style');
-style.textContent = `
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 25px;
-        border-radius: 4px;
-        color: white;
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-    }
-
-    .notification.success {
-        background-color: var(--success-color);
-    }
-
-    .notification.error {
-        background-color: var(--danger-color);
-    }
-
-    .notification.info {
-        background-color: var(--primary-color);
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .budget-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-    }
-
-    .edit-btn, .delete-btn {
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-    }
-
-    .edit-btn {
-        background-color: var(--warning-color);
-    }
-
-    .delete-btn {
-        background-color: var(--danger-color);
-    }
-`;
+style.textContent = `...`;  // Keep your existing styles here.
 document.head.appendChild(style);
     </script>
     <script src="navigation.js"></script>

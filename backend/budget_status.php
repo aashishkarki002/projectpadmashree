@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $servername = "localhost"; // Your server name
 $username = "root"; // Your username
 $password = ""; // Your password
-$dbname = "project1"; // Your database name
+$dbname = "hyaa"; // Your database name
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
